@@ -1,4 +1,7 @@
 # Default ignored files
+.idea/
+out/
+*.iml
 /shelf/
 /workspace.xml
 # Editor-based HTTP Client requests
