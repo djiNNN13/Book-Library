@@ -2,6 +2,7 @@
 /.idea
 /out
 *.iml
+*.xml
 /shelf/
 /modules.xml
 /workspace.xml
