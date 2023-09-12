@@ -4,7 +4,7 @@
 *.iml
 *.xml
 /shelf/
-/modules.xml
+/.idea/modules.xml
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
