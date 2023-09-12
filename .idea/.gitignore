@@ -3,6 +3,7 @@
 /out
 *.iml
 /shelf/
+/modules.xml
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
