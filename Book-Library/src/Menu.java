@@ -34,14 +34,12 @@ public class Menu {
             switch (option) {
                 case "1" -> {
                     library.getBooks().forEach(System.out::println);
-                    System.out.println(separator);
-                    System.out.println(optionsMessage);
+                    printSeparatorAndOptionsMessage();
 
                 }
                 case "2" -> {
                     library.getReaders().forEach(System.out::println);
-                    System.out.println(separator);
-                    System.out.println(optionsMessage);
+                    printSeparatorAndOptionsMessage();
 
                 }
 
@@ -59,4 +57,9 @@ public class Menu {
             }
         }
     }
+    private void printSeparatorAndOptionsMessage() {
+        System.out.println(separator);
+        System.out.println(optionsMessage);
+    }
+
 }
