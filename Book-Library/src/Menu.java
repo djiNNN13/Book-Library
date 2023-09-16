@@ -31,7 +31,6 @@ public class Menu {
                 default -> {
                     System.out.println("Invalid option");
                     exitRequset = true;
-                    break;
                 }
             }
         }
