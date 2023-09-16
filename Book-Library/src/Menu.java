@@ -26,7 +26,7 @@ public class Menu {
                 case "exit" -> {
                     System.out.println("Goodbye");
                     exitRequset = true;
-                    break;
+
                 }
                 default -> {
                     System.out.println("Invalid option");
