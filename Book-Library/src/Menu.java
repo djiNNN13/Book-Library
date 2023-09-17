@@ -46,7 +46,7 @@ public class Menu {
                 case "exit", "EXIT" -> exitRequset = exit();
 
                 default -> {
-                    handleInvalidOptions();
+                    System.out.println("Invalid option, please write correct option from the menu.");
                     System.out.println(separator);
                 }
 
@@ -71,10 +71,6 @@ public class Menu {
         System.out.println("Goodbye");
         System.out.println(separator);
         return true;
-    }
-
-    private void handleInvalidOptions() {
-        System.out.println("Invalid option, please write correct option from the menu.");
     }
 
 
