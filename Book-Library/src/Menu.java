@@ -30,20 +30,15 @@ public class Menu {
         boolean exitRequset = false;
 
         while (!exitRequset) {
-            String option = scanner.nextLine();
+            String option = scanner.nextLine().toLowerCase();
+
+            printSeparatorAndOptionsMessage();
             switch (option) {
-                case "1" -> {
-                    showAllBooks();
-                    printSeparatorAndOptionsMessage();
+                case "1" -> showAllBooks();
 
-                }
-                case "2" -> {
-                    showAllReaders();
-                    printSeparatorAndOptionsMessage();
+                case "2" -> showAllReaders();
 
-                }
-
-                case "exit", "EXIT" -> exitRequset = exit();
+                case "exit" -> exitRequset = exit();
 
                 default -> {
                     System.out.println("Invalid option, please write correct option from the menu.");
