@@ -3,6 +3,7 @@
 /out/
 *.iml
 *.xml
+/target
 /shelf/
 /.idea/modules.xml
 /workspace.xml

@@ -1,10 +1,14 @@
-public class Book {
-  private int id;
-  private String name;
-  private String author;
+import java.util.Objects;
 
-  public Book(int id, String name, String author) {
-    this.id = id;
+public class Book {
+  private static int count = 0;
+  private final int id;
+  private final String name;
+  private final String author;
+
+  public Book(String name, String author) {
+    this.id = count;
+    count++;
     this.name = name;
     this.author = author;
   }
@@ -21,16 +25,17 @@ public class Book {
     return author;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Book book = (Book) o;
+    return id == book.id;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 
   @Override

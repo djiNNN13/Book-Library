@@ -1,17 +1,13 @@
+import java.util.Objects;
+
 public class Reader {
-  private int id;
-  private String name;
+  private static int count = 0;
+  private final int id;
+  private final String name;
 
-  public Reader(int id, String name) {
-    this.id = id;
-    this.name = name;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
+  public Reader(String name) {
+    this.id = count;
+    count++;
     this.name = name;
   }
 
@@ -19,8 +15,17 @@ public class Reader {
     return id;
   }
 
-  public String getName() {
-    return name;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Reader reader = (Reader) o;
+    return id == reader.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 
   @Override
