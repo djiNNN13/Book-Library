@@ -1,8 +1,3 @@
-import exceptions.InvalidBookTitleException;
-import exceptions.InvalidIdException;
-import exceptions.InvalidInputFormatException;
-import exceptions.InvalidNameException;
-
 import java.util.Scanner;
 
 public class Menu {

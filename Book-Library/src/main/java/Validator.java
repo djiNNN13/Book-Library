@@ -1,8 +1,3 @@
-import exceptions.InvalidBookTitleException;
-import exceptions.InvalidIdException;
-import exceptions.InvalidInputFormatException;
-import exceptions.InvalidNameException;
-
 public class Validator {
 
   public void validateName(String name) throws InvalidNameException {
