@@ -1,4 +1,8 @@
-import java.util.NoSuchElementException;
+import exceptions.InvalidBookTitleException;
+import exceptions.InvalidIdException;
+import exceptions.InvalidInputFormatException;
+import exceptions.InvalidNameException;
+
 import java.util.Scanner;
 
 public class Menu {
@@ -67,9 +71,9 @@ public class Menu {
               "Invalid option, please write correct option from the menu.");
         }
       } catch (InvalidNameException
-          | InvalidIdException
-          | InvalidInputFormatException
-          | InvalidBookTitleException ex) {
+               | InvalidIdException
+               | InvalidInputFormatException
+               | InvalidBookTitleException ex) {
         System.err.println(ex.getMessage());
       }
       if (showOptions) {

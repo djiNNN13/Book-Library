@@ -1,3 +1,8 @@
+import exceptions.InvalidBookTitleException;
+import exceptions.InvalidIdException;
+import exceptions.InvalidInputFormatException;
+import exceptions.InvalidNameException;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
