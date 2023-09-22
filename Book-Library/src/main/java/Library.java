@@ -1,21 +1,24 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Library {
   private List<Book> books;
   private List<Reader> readers;
+  private Map<Book, Reader> borrowedBooks = new HashMap<>();
 
   public Library() {
     books = new ArrayList<>();
     readers = new ArrayList<>();
 
-    books.add(new Book(1, "1984", "George Orwell"));
-    books.add(new Book(2, "Home", "Tony Morrsion"));
-    books.add(new Book(3, "Glue", "Irvine Welsh"));
+    books.add(new Book("1984", "George Orwell"));
+    books.add(new Book("Home", "Tony Morrsion"));
+    books.add(new Book("Glue", "Irvine Welsh"));
 
-    readers.add(new Reader(1, "Ivan"));
-    readers.add(new Reader(2, "Yevhenii"));
-    readers.add(new Reader(3, "Andrii"));
+    readers.add(new Reader("Ivan"));
+    readers.add(new Reader("Yevhenii"));
+    readers.add(new Reader("Andrii"));
   }
 
   public List<Book> getBooks() {
@@ -24,5 +27,29 @@ public class Library {
 
   public List<Reader> getReaders() {
     return readers;
+  }
+
+  public Map<Book, Reader> getBorrowedBooks() {
+    return borrowedBooks;
+  }
+
+  public void removeBook(Book book) {
+    books.remove(book);
+  }
+
+  public void removeBorrowedBook(Book book) {
+    borrowedBooks.remove(book);
+  }
+
+  public void addBorrowedBook(Book book, Reader reader) {
+    borrowedBooks.put(book, reader);
+  }
+
+  public void addBook(Book book) {
+    books.add(book);
+  }
+
+  public void addReader(Reader reader) {
+    readers.add(reader);
   }
 }
