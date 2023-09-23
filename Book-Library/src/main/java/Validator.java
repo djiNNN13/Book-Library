@@ -7,9 +7,12 @@ public class Validator {
 
   public void validateName(String name) throws InvalidNameException {
     int nameLength = name.length();
+    if (!name.matches(".*[a-zA-Z].*")) {
+      throw new InvalidNameException("Name must contain at least one English letter!");
+    }
     if (!name.matches("^[a-zA-Z\\s'-]+$")) {
       throw new InvalidNameException(
-          "Name must contain only english letters, spaces, dashes, and apostrophes!");
+              "Name must contain only English letters, spaces, dashes, and apostrophes!");
     }
     if (nameLength < 5) {
       throw new InvalidNameException("Name must be longer than 5 characters!");

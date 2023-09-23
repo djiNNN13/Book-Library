@@ -40,27 +40,33 @@ public class Menu {
           case "3" -> {
             System.out.println("Please enter new reader full name!");
             libraryService.registerNewReader(getUserInput());
+            System.out.println();
           }
           case "4" -> {
             System.out.println("Please enter new book name and author separated by “/”");
             libraryService.addNewBook(getUserInput());
+            System.out.println();
           }
           case "5" -> {
             System.out.println(
                 "Please enter book ID and reader ID separated by “/” to borrow a book.");
             libraryService.borrowBook(getUserInput());
+            System.out.println();
           }
           case "6" -> {
             System.out.println("Please enter book ID to return a book.");
             libraryService.returnBookToLibrary(getUserInput());
+            System.out.println();
           }
           case "7" -> {
             System.out.println("Please enter reader ID to show all his borrowed books");
             libraryService.showBorrowedBooks(getUserInput());
+            System.out.println();
           }
           case "8" -> {
             System.out.println("Please enter book ID to show all his readers");
             libraryService.showCurrentReaderOfBook(getUserInput());
+            System.out.println();
           }
           case "exit" -> {
             System.out.println("Goodbye!");
