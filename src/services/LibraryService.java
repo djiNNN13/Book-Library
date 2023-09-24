@@ -1,16 +1,23 @@
+package services;
+
+import entities.Book;
+import entities.Reader;
 import exceptions.InvalidBookTitleException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidInputFormatException;
 import exceptions.InvalidNameException;
+import storage.Library;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class LibraryService {
   private final Validator validator = new Validator();
   private final Library library;
+  private final Scanner scanner = new Scanner(System.in);
 
   public LibraryService(Library library) {
     this.library = library;
@@ -24,35 +31,39 @@ public class LibraryService {
     library.getReaders().forEach(System.out::println);
   }
 
-  private Optional<Reader> findReaderForBook(int bookId) {
+  private Optional<Reader> findReaderOfBook(int bookId) {
     return library.getBorrowedBooks().entrySet().stream()
         .filter(entry -> entry.getKey().getId() == bookId)
         .map(Map.Entry::getValue)
         .findFirst();
   }
 
-  private List<Book> findBorrowedBooksForReader(int readerId) {
+  private List<Book> findBorrowedBooksOfReader(int readerId) {
     return library.getBorrowedBooks().entrySet().stream()
         .filter(entry -> entry.getValue().getId() == readerId)
         .map(Map.Entry::getKey)
         .collect(Collectors.toList());
   }
 
-  public void showCurrentReaderOfBook(String userInput) throws InvalidIdException {
+  public void showCurrentReaderOfBook() throws InvalidIdException {
+    System.out.println("Please enter book ID to show all his readers");
+    String userInput = getUserInput();
     validator.validateSingleId(userInput);
     int bookId = Integer.parseInt(userInput);
-    Optional<Reader> reader = findReaderForBook(bookId);
+    Optional<Reader> reader = findReaderOfBook(bookId);
     if (reader.isPresent()) {
       System.out.println("Borrowed by reader ID: " + reader.get().getId());
     } else {
-      System.err.println("No readers found for Book ID = " + bookId);
+      System.err.println("No readers found for entity.Book ID = " + bookId);
     }
   }
 
-  public void showBorrowedBooks(String userInput) throws InvalidIdException {
+  public void showBorrowedBooks() throws InvalidIdException {
+    System.out.println("Please enter reader ID to show all his borrowed books");
+    String userInput = getUserInput();
     validator.validateSingleId(userInput);
     int readerId = Integer.parseInt(userInput);
-    List<Book> borrowedBooks = findBorrowedBooksForReader(readerId);
+    List<Book> borrowedBooks = findBorrowedBooksOfReader(readerId);
     if (!borrowedBooks.isEmpty()) {
       for (Book book : borrowedBooks) {
         System.out.println(
@@ -64,16 +75,20 @@ public class LibraryService {
                 + readerId);
       }
     } else {
-      System.err.println("No borrowed books found for Reader ID = " + readerId);
+      System.err.println("No borrowed books found for entity.Reader ID = " + readerId);
     }
   }
 
-  public void registerNewReader(String readerName) throws InvalidNameException {
+  public void registerNewReader() throws InvalidNameException {
+    System.out.println("Please enter new reader full name!");
+    String readerName = getUserInput();
     validator.validateName(readerName);
     library.addReader(new Reader(readerName));
   }
 
-  public void addNewBook(String book) throws InvalidBookTitleException, InvalidNameException {
+  public void addNewBook() throws InvalidBookTitleException, InvalidNameException {
+    System.out.println("Please enter new book name and author separated by “/”");
+    String book = getUserInput();
     if (!book.matches("^.*\\/.*$")) {
       System.err.println("Invalid input format. Please use letters and exactly one '/' character.");
       return;
@@ -86,7 +101,10 @@ public class LibraryService {
     library.addBook(new Book(bookTitle, authorName));
   }
 
-  public void borrowBook(String userInput) throws InvalidInputFormatException, InvalidIdException {
+  public void borrowBook() throws InvalidInputFormatException, InvalidIdException {
+    System.out.println(
+            "Please enter book ID and reader ID separated by “/” to borrow a book.");
+    String userInput = getUserInput();
     if (!userInput.matches("^[^/]*[/][^/]*$")) {
       System.err.println("Invalid input format. Please use exactly one '/' character.");
       return;
@@ -99,14 +117,14 @@ public class LibraryService {
     Optional<Book> matchingBook =
         library.getBooks().stream().filter(book -> bookId == book.getId()).findFirst();
     if (matchingBook.isEmpty()) {
-      System.err.println("Book with ID " + bookId + " not found!");
+      System.err.println("entity.Book with ID " + bookId + " not found!");
       return;
     }
     Book bookToBorrow = matchingBook.get();
     Optional<Reader> matchingReader =
         library.getReaders().stream().filter(reader -> readerId == reader.getId()).findFirst();
     if (matchingReader.isEmpty()) {
-      System.err.println("Reader with ID " + readerId + " not found!");
+      System.err.println("entity.Reader with ID " + readerId + " not found!");
       return;
     }
     Reader borrowingReader = matchingReader.get();
@@ -116,7 +134,9 @@ public class LibraryService {
     System.out.println(library.getBorrowedBooks());
   }
 
-  public void returnBookToLibrary(String userInput) throws InvalidIdException {
+  public void returnBookToLibrary() throws InvalidIdException {
+    System.out.println("Please enter book ID to return a book.");
+    String userInput = getUserInput();
     validator.validateSingleId(userInput);
     int bookId = Integer.parseInt(userInput);
     Book bookToReturn =
@@ -125,11 +145,15 @@ public class LibraryService {
             .findFirst()
             .orElse(null);
     if (bookToReturn == null) {
-      System.err.println("Book with ID " + bookId + " not found!");
+      System.err.println("entity.Book with ID " + bookId + " not found!");
       return;
     }
     library.addBook(bookToReturn);
     library.removeBorrowedBook(bookToReturn);
     System.out.println(library.getBorrowedBooks());
+  }
+
+  private String getUserInput() {
+    return scanner.nextLine();
   }
 }

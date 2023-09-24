@@ -1,19 +1,21 @@
+package entities;
+
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Book {
-  private static int count = 0;
-  private final int id;
+  private static final AtomicLong count = new AtomicLong(0);
+  private final long id;
   private final String name;
   private final String author;
 
   public Book(String name, String author) {
-    this.id = count;
-    count++;
+    this.id = count.getAndIncrement();
     this.name = name;
     this.author = author;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 

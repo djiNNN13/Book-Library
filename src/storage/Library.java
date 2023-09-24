@@ -1,12 +1,17 @@
+package storage;
+
+import entities.Book;
+import entities.Reader;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Library {
-  private List<Book> books;
-  private List<Reader> readers;
-  private Map<Book, Reader> borrowedBooks = new HashMap<>();
+  private final List<Book> books;
+  private final List<Reader> readers;
+  private final Map<Book, Reader> borrowedBooks = new HashMap<>();
 
   public Library() {
     books = new ArrayList<>();

@@ -1,7 +1,11 @@
+package views;
+
 import exceptions.InvalidBookTitleException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidInputFormatException;
 import exceptions.InvalidNameException;
+import services.LibraryService;
+import storage.Library;
 
 import java.util.Scanner;
 
@@ -25,54 +29,25 @@ public class Menu {
   private final Library library = new Library();
   private final Scanner scanner = new Scanner(System.in);
   private final LibraryService libraryService = new LibraryService(library);
+  private boolean showOptions = true;
+  private boolean exitRequest = false;
 
   public void displayMenu() {
-    boolean showOptions = true;
     System.out.println(SEPARATOR);
     System.out.println(WELCOME_MESSAGE + "\n\n" + OPTIONS_MESSAGE);
-    boolean exitRequest = false;
     while (!exitRequest) {
       try {
         String option = scanner.nextLine().toLowerCase();
         switch (option) {
           case "1" -> libraryService.showAllBooks();
           case "2" -> libraryService.showAllReaders();
-          case "3" -> {
-            System.out.println("Please enter new reader full name!");
-            libraryService.registerNewReader(getUserInput());
-            System.out.println();
-          }
-          case "4" -> {
-            System.out.println("Please enter new book name and author separated by “/”");
-            libraryService.addNewBook(getUserInput());
-            System.out.println();
-          }
-          case "5" -> {
-            System.out.println(
-                "Please enter book ID and reader ID separated by “/” to borrow a book.");
-            libraryService.borrowBook(getUserInput());
-            System.out.println();
-          }
-          case "6" -> {
-            System.out.println("Please enter book ID to return a book.");
-            libraryService.returnBookToLibrary(getUserInput());
-            System.out.println();
-          }
-          case "7" -> {
-            System.out.println("Please enter reader ID to show all his borrowed books");
-            libraryService.showBorrowedBooks(getUserInput());
-            System.out.println();
-          }
-          case "8" -> {
-            System.out.println("Please enter book ID to show all his readers");
-            libraryService.showCurrentReaderOfBook(getUserInput());
-            System.out.println();
-          }
-          case "exit" -> {
-            System.out.println("Goodbye!");
-            exitRequest = true;
-            showOptions = false;
-          }
+          case "3" -> libraryService.registerNewReader();
+          case "4" -> libraryService.addNewBook();
+          case "5" -> libraryService.borrowBook();
+          case "6" -> libraryService.returnBookToLibrary();
+          case "7" -> libraryService.showBorrowedBooks();
+          case "8" -> libraryService.showCurrentReaderOfBook();
+          case "exit" -> exitFromMenu();
           default -> System.err.println(
               "Invalid option, please write correct option from the menu.");
         }
@@ -88,8 +63,9 @@ public class Menu {
       }
     }
   }
-
-  private String getUserInput() {
-    return scanner.nextLine();
+  private void exitFromMenu(){
+    System.out.println("Goodbye!");
+    exitRequest = true;
+    showOptions = false;
   }
 }

@@ -1,17 +1,19 @@
+package entities;
+
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Reader {
-  private static int count = 0;
-  private final int id;
+  private static final AtomicLong count = new AtomicLong(0);
+  private final long id;
   private final String name;
 
   public Reader(String name) {
-    this.id = count;
-    count++;
+    this.id = count.getAndIncrement();
     this.name = name;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 

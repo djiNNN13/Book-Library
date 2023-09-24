@@ -1,3 +1,5 @@
+package services;
+
 import exceptions.InvalidBookTitleException;
 import exceptions.InvalidIdException;
 import exceptions.InvalidInputFormatException;
@@ -26,13 +28,13 @@ public class Validator {
     int bookTitleLength = bookTitle.length();
     if (bookTitle.matches(".*[|/\\\\#%=+*_><].*")) {
       throw new InvalidBookTitleException(
-          "Book title must not contain the following characters: |/\\#%=+*_><");
+          "entity.Book title must not contain the following characters: |/\\#%=+*_><");
     }
     if (bookTitleLength < 5) {
-      throw new InvalidBookTitleException("Book title must be longer than 5 characters!");
+      throw new InvalidBookTitleException("entity.Book title must be longer than 5 characters!");
     }
     if (bookTitleLength > 100) {
-      throw new InvalidBookTitleException("Book title must be shorter than 100 characters!");
+      throw new InvalidBookTitleException("entity.Book title must be shorter than 100 characters!");
     }
   }
 
@@ -52,7 +54,7 @@ public class Validator {
 
   public void validateSingleId(String inputId) throws InvalidIdException {
     if (!inputId.matches("^-?\\d+$")) {
-      throw new InvalidIdException("Book ID must be only 1 int value!");
+      throw new InvalidIdException("entity.Book ID must be only 1 int value!");
     }
   }
 }
