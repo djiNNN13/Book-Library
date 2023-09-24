@@ -1,4 +1,4 @@
-package exceptions;
+package exception;
 
 public class InvalidInputFormatException extends Exception{
     public InvalidInputFormatException(String message){

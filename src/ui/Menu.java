@@ -1,11 +1,11 @@
-package views;
+package ui;
 
-import exceptions.InvalidBookTitleException;
-import exceptions.InvalidIdException;
-import exceptions.InvalidInputFormatException;
-import exceptions.InvalidNameException;
-import services.LibraryService;
-import storage.Library;
+import exception.InvalidBookTitleException;
+import exception.InvalidIdException;
+import exception.InvalidInputFormatException;
+import exception.InvalidNameException;
+import service.LibraryService;
+import dao.Library;
 
 import java.util.Scanner;
 

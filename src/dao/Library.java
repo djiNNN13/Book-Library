@@ -1,7 +1,7 @@
-package storage;
+package dao;
 
-import entities.Book;
-import entities.Reader;
+import entity.Book;
+import entity.Reader;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package exceptions;
+package exception;
 
 public class InvalidBookTitleException extends Exception{
     public InvalidBookTitleException(String message){

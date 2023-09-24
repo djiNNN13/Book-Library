@@ -1,12 +1,12 @@
-package services;
+package service;
 
-import entities.Book;
-import entities.Reader;
-import exceptions.InvalidBookTitleException;
-import exceptions.InvalidIdException;
-import exceptions.InvalidInputFormatException;
-import exceptions.InvalidNameException;
-import storage.Library;
+import entity.Book;
+import entity.Reader;
+import exception.InvalidBookTitleException;
+import exception.InvalidIdException;
+import exception.InvalidInputFormatException;
+import exception.InvalidNameException;
+import dao.Library;
 
 import java.util.List;
 import java.util.Map;
@@ -117,14 +117,14 @@ public class LibraryService {
     Optional<Book> matchingBook =
         library.getBooks().stream().filter(book -> bookId == book.getId()).findFirst();
     if (matchingBook.isEmpty()) {
-      System.err.println("entity.Book with ID " + bookId + " not found!");
+      System.err.println("Book with ID " + bookId + " not found!");
       return;
     }
     Book bookToBorrow = matchingBook.get();
     Optional<Reader> matchingReader =
         library.getReaders().stream().filter(reader -> readerId == reader.getId()).findFirst();
     if (matchingReader.isEmpty()) {
-      System.err.println("entity.Reader with ID " + readerId + " not found!");
+      System.err.println("Reader with ID " + readerId + " not found!");
       return;
     }
     Reader borrowingReader = matchingReader.get();
@@ -145,7 +145,7 @@ public class LibraryService {
             .findFirst()
             .orElse(null);
     if (bookToReturn == null) {
-      System.err.println("entity.Book with ID " + bookId + " not found!");
+      System.err.println("Book with ID " + bookId + " not found!");
       return;
     }
     library.addBook(bookToReturn);
