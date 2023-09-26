@@ -9,7 +9,7 @@ public class Reader {
   private final String name;
 
   public Reader(String name) {
-    this.id = count.getAndIncrement();
+    this.id = count.incrementAndGet();
     this.name = name;
   }
 

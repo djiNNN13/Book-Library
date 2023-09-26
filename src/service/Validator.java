@@ -14,7 +14,7 @@ public class Validator {
     }
     if (!name.matches("^[a-zA-Z\\s'-]+$")) {
       throw new InvalidNameException(
-              "Name must contain only English letters, spaces, dashes, and apostrophes!");
+          "Name must contain only English letters, spaces, dashes, and apostrophes!");
     }
     if (nameLength < 5) {
       throw new InvalidNameException("Name must be longer than 5 characters!");

@@ -8,23 +8,25 @@ public class Book {
   private final long id;
   private final String name;
   private final String author;
+  private long readerId;
 
-  public Book(String name, String author) {
-    this.id = count.getAndIncrement();
+  public Book(String name, String author, long readerId) {
+    this.id = count.incrementAndGet();
     this.name = name;
     this.author = author;
+    this.readerId = readerId;
   }
 
   public long getId() {
     return id;
   }
 
-  public String getName() {
-    return name;
+  public long getReaderId() {
+    return readerId;
   }
 
-  public String getAuthor() {
-    return author;
+  public void setReaderId(long readerId) {
+    this.readerId = readerId;
   }
 
   @Override

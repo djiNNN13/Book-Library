@@ -1,159 +1,91 @@
 package service;
 
+import dao.BookDao;
+import dao.BookDaoImpl;
+import dao.ReaderDao;
+import dao.ReaderDaoImpl;
 import entity.Book;
 import entity.Reader;
 import exception.InvalidBookTitleException;
 import exception.InvalidIdException;
 import exception.InvalidInputFormatException;
 import exception.InvalidNameException;
-import dao.Library;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class LibraryService {
   private final Validator validator = new Validator();
-  private final Library library;
-  private final Scanner scanner = new Scanner(System.in);
+  private final BookDao bookDao = new BookDaoImpl();
+  private final ReaderDao readerDao = new ReaderDaoImpl();
 
-  public LibraryService(Library library) {
-    this.library = library;
+  public List<Book> findAllBooks() {
+    return bookDao.findAll();
   }
 
-  public void showAllBooks() {
-    library.getBooks().forEach(System.out::println);
+  public List<Reader> findAllReader() {
+    return readerDao.findAll();
   }
 
-  public void showAllReaders() {
-    library.getReaders().forEach(System.out::println);
-  }
-
-  private Optional<Reader> findReaderOfBook(int bookId) {
-    return library.getBorrowedBooks().entrySet().stream()
-        .filter(entry -> entry.getKey().getId() == bookId)
-        .map(Map.Entry::getValue)
-        .findFirst();
-  }
-
-  private List<Book> findBorrowedBooksOfReader(int readerId) {
-    return library.getBorrowedBooks().entrySet().stream()
-        .filter(entry -> entry.getValue().getId() == readerId)
-        .map(Map.Entry::getKey)
-        .collect(Collectors.toList());
-  }
-
-  public void showCurrentReaderOfBook() throws InvalidIdException {
-    System.out.println("Please enter book ID to show all his readers");
-    String userInput = getUserInput();
+  public Long showCurrentReaderOfBook(String userInput) throws InvalidIdException {
     validator.validateSingleId(userInput);
     int bookId = Integer.parseInt(userInput);
-    Optional<Reader> reader = findReaderOfBook(bookId);
-    if (reader.isPresent()) {
-      System.out.println("Borrowed by reader ID: " + reader.get().getId());
-    } else {
-      System.err.println("No readers found for entity.Book ID = " + bookId);
+    long readerId = bookDao.findReaderIdByBookId(bookId);
+    if (readerId == 0L) {
+      throw new InvalidIdException("No readers found for this Book ID");
     }
+    return readerId;
   }
 
-  public void showBorrowedBooks() throws InvalidIdException {
-    System.out.println("Please enter reader ID to show all his borrowed books");
-    String userInput = getUserInput();
+  public List<Book> showBorrowedBooks(String userInput) throws InvalidIdException {
     validator.validateSingleId(userInput);
-    int readerId = Integer.parseInt(userInput);
-    List<Book> borrowedBooks = findBorrowedBooksOfReader(readerId);
-    if (!borrowedBooks.isEmpty()) {
-      for (Book book : borrowedBooks) {
-        System.out.println(
-            "Title: "
-                + book.getName()
-                + ", Author: "
-                + book.getAuthor()
-                + ", Borrowed by reader ID: "
-                + readerId);
-      }
-    } else {
-      System.err.println("No borrowed books found for entity.Reader ID = " + readerId);
+    long readerId = Long.parseLong(userInput);
+    List<Book> borrowedBooks = bookDao.findAllByReaderId(readerId);
+    if (borrowedBooks.isEmpty()) {
+      throw new InvalidIdException("There is no borrowed books!");
     }
+    return borrowedBooks;
   }
 
-  public void registerNewReader() throws InvalidNameException {
-    System.out.println("Please enter new reader full name!");
-    String readerName = getUserInput();
+  public void addNewReader(String readerName) throws InvalidNameException {
     validator.validateName(readerName);
-    library.addReader(new Reader(readerName));
+    readerDao.save(new Reader(readerName));
   }
 
-  public void addNewBook() throws InvalidBookTitleException, InvalidNameException {
-    System.out.println("Please enter new book name and author separated by “/”");
-    String book = getUserInput();
+  public void addNewBook(String book)
+      throws InvalidBookTitleException, InvalidNameException, InvalidInputFormatException {
     if (!book.matches("^.*\\/.*$")) {
-      System.err.println("Invalid input format. Please use letters and exactly one '/' character.");
-      return;
+      throw new InvalidInputFormatException(
+          "Invalid input format. Please use letters and exactly one '/' character.");
     }
     String[] parts = book.split("/");
     String bookTitle = parts[0];
     String authorName = parts[1];
     validator.validateBookTitle(bookTitle);
     validator.validateName(authorName);
-    library.addBook(new Book(bookTitle, authorName));
+    bookDao.save(new Book(bookTitle, authorName, 0));
   }
 
-  public void borrowBook() throws InvalidInputFormatException, InvalidIdException {
-    System.out.println(
-            "Please enter book ID and reader ID separated by “/” to borrow a book.");
-    String userInput = getUserInput();
-    if (!userInput.matches("^[^/]*[/][^/]*$")) {
-      System.err.println("Invalid input format. Please use exactly one '/' character.");
-      return;
+  public void borrowBook(String bookIdAndReaderId)
+      throws InvalidInputFormatException, InvalidIdException {
+    if (!bookIdAndReaderId.matches("^[^/]*[/][^/]*$")) {
+      throw new InvalidInputFormatException(
+          "Invalid input format. Please use exactly one '/' character.");
     }
-    String[] ids = userInput.split("/");
-    validator.validateIdToBorrowBook(userInput);
-    int bookId = Integer.parseInt(ids[0]);
-    int readerId = Integer.parseInt(ids[1]);
-
-    Optional<Book> matchingBook =
-        library.getBooks().stream().filter(book -> bookId == book.getId()).findFirst();
-    if (matchingBook.isEmpty()) {
-      System.err.println("Book with ID " + bookId + " not found!");
-      return;
-    }
-    Book bookToBorrow = matchingBook.get();
-    Optional<Reader> matchingReader =
-        library.getReaders().stream().filter(reader -> readerId == reader.getId()).findFirst();
-    if (matchingReader.isEmpty()) {
-      System.err.println("Reader with ID " + readerId + " not found!");
-      return;
-    }
-    Reader borrowingReader = matchingReader.get();
-
-    library.removeBook(bookToBorrow);
-    library.addBorrowedBook(bookToBorrow, borrowingReader);
-    System.out.println(library.getBorrowedBooks());
+    String[] ids = bookIdAndReaderId.split("/");
+    validator.validateIdToBorrowBook(bookIdAndReaderId);
+    long bookId = Long.parseLong(ids[0]);
+    long readerId = Long.parseLong(ids[1]);
+    bookDao.borrowBook(bookId, readerId);
   }
 
-  public void returnBookToLibrary() throws InvalidIdException {
-    System.out.println("Please enter book ID to return a book.");
-    String userInput = getUserInput();
-    validator.validateSingleId(userInput);
-    int bookId = Integer.parseInt(userInput);
+  public void returnBookToLibrary(String bookIdToReturn) throws InvalidIdException {
+    validator.validateSingleId(bookIdToReturn);
+    int bookId = Integer.parseInt(bookIdToReturn);
     Book bookToReturn =
-        library.getBorrowedBooks().keySet().stream()
-            .filter(book -> book.getId() == bookId)
-            .findFirst()
-            .orElse(null);
-    if (bookToReturn == null) {
-      System.err.println("Book with ID " + bookId + " not found!");
-      return;
+        bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException("Book ID is not found!"));
+    if (bookToReturn.getReaderId() == 0) {
+      throw new InvalidIdException("Book doesn't have a reader!");
     }
-    library.addBook(bookToReturn);
-    library.removeBorrowedBook(bookToReturn);
-    System.out.println(library.getBorrowedBooks());
-  }
-
-  private String getUserInput() {
-    return scanner.nextLine();
+    bookDao.removeReader(bookToReturn);
   }
 }
