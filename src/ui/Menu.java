@@ -1,18 +1,29 @@
 package ui;
 
+import entity.Book;
 import exception.InvalidBookTitleException;
 import exception.InvalidIdException;
 import exception.InvalidInputFormatException;
 import exception.InvalidNameException;
 import service.LibraryService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-  private static final String EXIT_MESSAGE = "Goodbye!";
-  private static final String WELCOME_MESSAGE = "WELCOME TO THE LIBRARY!";
-  private static final String OPTIONS_MESSAGE =
-      """
+  private static final String SET_GREEN_TEXT_COLOR = "\u001B[32m";
+  private static final String SET_DEFAULT_TEXT_COLOR = "\u001B[0m";
+  private static final String SEPARATOR =
+      "-------------------------------------------------------------------";
+  private final Scanner scanner = new Scanner(System.in);
+  private final LibraryService libraryService = new LibraryService();
+
+  public void displayMenu() {
+    System.out.println(SEPARATOR);
+    System.out.println("WELCOME TO THE LIBRARY!");
+    while (true) {
+      System.out.println(
+          """
             PLEASE, SELECT ONE OF THE FOLLOWING ACTIONS BY TYPING THE OPTION’S NUMBER AND PRESSING ENTER KEY:
                 [1] SHOW ALL BOOKS IN THE LIBRARY
                 [2] SHOW ALL READERS REGISTERED IN THE LIBRARY
@@ -23,17 +34,7 @@ public class Menu {
                 [7] SHOW ALL BORROWED BOOK BY USER ID
                 [8] SHOW CURRENT READER OF A BOOK WITH ID
             TYPE “EXIT” TO STOP THE PROGRAM AND EXIT!
-                    """;
-  private static final String SEPARATOR =
-      "-------------------------------------------------------------------";
-  private final Scanner scanner = new Scanner(System.in);
-  private final LibraryService libraryService = new LibraryService();
-
-  public void displayMenu() {
-    System.out.println(SEPARATOR);
-    System.out.println(WELCOME_MESSAGE);
-    while (true) {
-      System.out.println(OPTIONS_MESSAGE);
+                    """);
       try {
         switch (scanner.nextLine().toLowerCase()) {
           case "1" -> showAllBooks();
@@ -59,15 +60,15 @@ public class Menu {
   }
 
   private void showAllBooks() {
-    System.out.print("\u001B[32m");
+    System.out.print(SET_GREEN_TEXT_COLOR);
     libraryService.findAllBooks().forEach(System.out::println);
-    System.out.print("\u001B[0m");
+    System.out.print(SET_DEFAULT_TEXT_COLOR);
   }
 
   private void showAllReaders() {
-    System.out.print("\u001B[32m");
+    System.out.print(SET_GREEN_TEXT_COLOR);
     libraryService.findAllReader().forEach(System.out::println);
-    System.out.print("\u001B[0m");
+    System.out.print(SET_DEFAULT_TEXT_COLOR);
   }
 
   private void addNewReader() throws InvalidNameException {
@@ -76,9 +77,12 @@ public class Menu {
     String readerName = scanner.nextLine();
     libraryService.addNewReader(readerName);
 
-    System.out.print("\u001B[32m");
-    System.out.println(readerName + " has successfully added!");
-    System.out.print("\u001B[0m");
+    System.out.println(
+        SET_GREEN_TEXT_COLOR
+            + "Reader "
+            + readerName
+            + "has successfully added!"
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void addNewBook()
@@ -88,9 +92,12 @@ public class Menu {
     String book = scanner.nextLine();
     libraryService.addNewBook(book);
 
-    System.out.print("\u001B[32m");
-    System.out.println(book + " has successfully added!");
-    System.out.print("\u001B[0m");
+    System.out.println(
+        SET_GREEN_TEXT_COLOR
+            + "Book "
+            + book
+            + " has successfully added!"
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void borrowBook() throws InvalidInputFormatException, InvalidIdException {
@@ -99,12 +106,12 @@ public class Menu {
     String bookIdAndReaderId = scanner.nextLine();
     libraryService.borrowBook(bookIdAndReaderId);
 
-    System.out.print("\u001B[32m");
     System.out.println(
-        "Book has successfully borrowed by reader, with "
+        SET_GREEN_TEXT_COLOR
+            + "Book has successfully borrowed by reader, with "
             + bookIdAndReaderId
-            + " ID's respectively!");
-    System.out.print("\u001B[0m");
+            + " ID's respectively!"
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void returnBookToLibrary() throws InvalidIdException {
@@ -113,22 +120,32 @@ public class Menu {
     String bookToReturn = scanner.nextLine();
     libraryService.returnBookToLibrary(bookToReturn);
 
-    System.out.print("\u001B[32m");
     System.out.println(
-        "Book with ID = " + bookToReturn + " has successfully returned to the library!");
-    System.out.print("\u001B[0m");
+        SET_GREEN_TEXT_COLOR
+            + "Book with ID = "
+            + bookToReturn
+            + " has successfully returned to the library!"
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void showBorrowedBooksByReaderId() throws InvalidIdException {
     System.out.println("Please enter reader ID to show all his borrowed books");
+
     String readerId = scanner.nextLine();
-    System.out.print("\u001B[32m");
+    List<Book> borrowedBooks = libraryService.showBorrowedBooks(readerId);
+
+    if (borrowedBooks.isEmpty()) {
+      System.err.println("There is no borrowed books by Reader ID = " + readerId);
+      return;
+    }
+
     System.out.println(
-        "Borrowed books by reader ID"
+        SET_GREEN_TEXT_COLOR
+            + "Borrowed books by reader ID"
             + readerId
             + " : "
-            + libraryService.showBorrowedBooks(readerId));
-    System.out.print("\u001B[0m");
+            + libraryService.showBorrowedBooks(readerId)
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void showCurrentReaderOfBookById() throws InvalidIdException {
@@ -137,15 +154,24 @@ public class Menu {
     String bookId = scanner.nextLine();
     long readerId = libraryService.showCurrentReaderOfBook(bookId);
 
-    System.out.print("\u001B[32m");
-    System.out.println("Reader of Book ID " + bookId + " = " + readerId);
-    System.out.print("\u001B[0m");
+    if (readerId == 0) {
+      System.err.println("Book is not borrowed yet!");
+      return;
+    }
+
+    System.out.println(
+        SET_GREEN_TEXT_COLOR
+            + "Reader of Book ID "
+            + bookId
+            + " = "
+            + readerId
+            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void exitFromMenu() {
     scanner.close();
-    System.out.println("\u001B[32m");
-    System.out.println(EXIT_MESSAGE);
+    System.out.println(SET_GREEN_TEXT_COLOR);
+    System.out.println("GOODBYE!");
     System.exit(0);
   }
 }

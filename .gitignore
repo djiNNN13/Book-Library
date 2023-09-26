@@ -1,8 +1,6 @@
 # Default ignored files
-target/
+/target
 .idea
-out/
-*.iml
-.idea/*.xml
+/Book-Library.iml
 
 
