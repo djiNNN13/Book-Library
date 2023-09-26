@@ -6,6 +6,12 @@ import exception.InvalidInputFormatException;
 import exception.InvalidNameException;
 
 public class Validator {
+  public void validateNewBookInputFormat(String book) throws InvalidInputFormatException {
+    if (!book.matches("^[^/]*\\/[^/]*$")) {
+      throw new InvalidInputFormatException(
+          "Invalid input format. Please use letters and exactly one '/' character.");
+    }
+  }
 
   public void validateName(String name) throws InvalidNameException {
     int nameLength = name.length();

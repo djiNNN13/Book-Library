@@ -12,6 +12,7 @@ import exception.InvalidInputFormatException;
 import exception.InvalidNameException;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LibraryService {
   private final static String BOOK_NOT_FOUND = "This Book ID doesn't exist!";
@@ -29,19 +30,19 @@ public class LibraryService {
   }
 
 
-  public Long showCurrentReaderOfBook(String bookIdToCheck) throws InvalidIdException {
+  public Optional<Reader> showCurrentReaderOfBook(String bookIdToCheck) throws InvalidIdException {
     validator.validateSingleId(bookIdToCheck);
 
     long bookId = Long.parseLong(bookIdToCheck);
-    Book book = bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
+    bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
 
     long readerId = bookDao.findReaderIdByBookId(bookId);
-    if (readerId == 0){
-      return readerId;
+    if (readerId == 0L){
+      return Optional.empty();
     }
     readerDao.findById(readerId).orElseThrow(() -> new InvalidIdException(READER_NOT_FOUND));
 
-    return book.getReaderId();
+    return readerDao.findById(readerId);
   }
 
   public List<Book> showBorrowedBooks(String readerIdToCheck) throws InvalidIdException {
@@ -60,14 +61,11 @@ public class LibraryService {
 
   public void addNewBook(String book)
       throws InvalidBookTitleException, InvalidNameException, InvalidInputFormatException {
-    if (!book.matches("^.*\\/.*$")) {
-      throw new InvalidInputFormatException(
-          "Invalid input format. Please use letters and exactly one '/' character.");
-    }
+    validator.validateNewBookInputFormat(book);
 
-    String[] parts = book.split("/");
-    String bookTitle = parts[0];
-    String authorName = parts[1];
+    String[] bookAndAuthor = book.split("/");
+    String bookTitle = bookAndAuthor[0];
+    String authorName = bookAndAuthor[1];
 
     validator.validateBookTitle(bookTitle);
     validator.validateName(authorName);
@@ -81,7 +79,7 @@ public class LibraryService {
     String[] ids = bookIdAndReaderId.split("/");
 
     long bookId = Long.parseLong(ids[0]);
-    Book book = bookDao.findById(bookId).orElseThrow(()-> new InvalidIdException(BOOK_NOT_FOUND));
+    bookDao.findById(bookId).orElseThrow(()-> new InvalidIdException(BOOK_NOT_FOUND));
 
     long readerId = Long.parseLong(ids[1]);
     readerDao.findById(readerId).orElseThrow(() -> new InvalidIdException(READER_NOT_FOUND));

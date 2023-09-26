@@ -1,6 +1,7 @@
 package ui;
 
 import entity.Book;
+import entity.Reader;
 import exception.InvalidBookTitleException;
 import exception.InvalidIdException;
 import exception.InvalidInputFormatException;
@@ -8,6 +9,7 @@ import exception.InvalidNameException;
 import service.LibraryService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Menu {
@@ -136,36 +138,34 @@ public class Menu {
 
     if (borrowedBooks.isEmpty()) {
       System.err.println("There is no borrowed books by Reader ID = " + readerId);
-      return;
+    } else {
+      System.out.println(
+          SET_GREEN_TEXT_COLOR
+              + "Borrowed books by reader ID"
+              + readerId
+              + " : "
+              + libraryService.showBorrowedBooks(readerId)
+              + SET_DEFAULT_TEXT_COLOR);
     }
-
-    System.out.println(
-        SET_GREEN_TEXT_COLOR
-            + "Borrowed books by reader ID"
-            + readerId
-            + " : "
-            + libraryService.showBorrowedBooks(readerId)
-            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void showCurrentReaderOfBookById() throws InvalidIdException {
     System.out.println("Please enter book ID to show all his readers");
 
     String bookId = scanner.nextLine();
-    long readerId = libraryService.showCurrentReaderOfBook(bookId);
+    Optional<Reader> reader = libraryService.showCurrentReaderOfBook(bookId);
 
-    if (readerId == 0) {
+    if (reader.isEmpty()) {
       System.err.println("Book is not borrowed yet!");
-      return;
+    } else {
+      System.out.println(
+          SET_GREEN_TEXT_COLOR
+              + "Reader of Book ID "
+              + bookId
+              + " = "
+              + reader.get()
+              + SET_DEFAULT_TEXT_COLOR);
     }
-
-    System.out.println(
-        SET_GREEN_TEXT_COLOR
-            + "Reader of Book ID "
-            + bookId
-            + " = "
-            + readerId
-            + SET_DEFAULT_TEXT_COLOR);
   }
 
   private void exitFromMenu() {
