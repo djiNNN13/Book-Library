@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReaderDao {
-  Reader save(Reader reader);
+  Reader save(Reader readerToSave);
 
   Optional<Reader> findById(long id);
 

@@ -18,9 +18,9 @@ public class BookDaoImpl implements BookDao {
   }
 
   @Override
-  public Book save(Book book) {
-    books.add(book);
-    return book;
+  public Book save(Book bookToSave) {
+    books.add(bookToSave);
+    return bookToSave;
   }
 
   @Override

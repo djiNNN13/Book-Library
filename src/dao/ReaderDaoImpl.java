@@ -16,9 +16,9 @@ public class ReaderDaoImpl implements ReaderDao {
   }
 
   @Override
-  public Reader save(Reader reader) {
-    readers.add(reader);
-    return reader;
+  public Reader save(Reader readerToSave) {
+    readers.add(readerToSave);
+    return readerToSave;
   }
 
   @Override
