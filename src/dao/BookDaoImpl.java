@@ -24,8 +24,8 @@ public class BookDaoImpl implements BookDao {
   }
 
   @Override
-  public void removeReader(Book book) {
-    book.setReaderId(0);
+  public void returnBookToLibrary(long bookId) {
+    findById(bookId).get().setReaderId(0);
   }
 
   @Override

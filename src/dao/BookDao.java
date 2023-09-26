@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookDao {
-  Book save(Book book);
+  Book save(Book bookToSave);
 
-  void removeReader(Book book);
+  void returnBookToLibrary(long bookId);
 
   Optional<Book> findById(long id);
 

@@ -22,11 +22,6 @@ public class ReaderDaoImpl implements ReaderDao {
   }
 
   @Override
-  public void removeReader(Reader reader) {
-    readers.remove(reader);
-  }
-
-  @Override
   public Optional<Reader> findById(long id) {
     return readers.stream().filter(reader -> reader.getId() == id).findFirst();
   }

@@ -8,8 +8,6 @@ import java.util.Optional;
 public interface ReaderDao {
   Reader save(Reader reader);
 
-  void removeReader(Reader reader);
-
   Optional<Reader> findById(long id);
 
   List<Reader> findAll();
