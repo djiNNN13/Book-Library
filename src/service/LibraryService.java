@@ -32,7 +32,7 @@ public class LibraryService {
   public Long showCurrentReaderOfBook(String bookIdToCheck) throws InvalidIdException {
     validator.validateSingleId(bookIdToCheck);
 
-    long bookId = Integer.parseInt(bookIdToCheck);
+    long bookId = Long.parseLong(bookIdToCheck);
     Book book = bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
 
     long readerId = bookDao.findReaderIdByBookId(bookId);
@@ -95,7 +95,7 @@ public class LibraryService {
   public void returnBookToLibrary(String bookIdToReturn) throws InvalidIdException {
     validator.validateSingleId(bookIdToReturn);
 
-    int bookId = Integer.parseInt(bookIdToReturn);
+    long bookId = Long.parseLong(bookIdToReturn);
     Book bookToReturn =
         bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
 
