@@ -53,22 +53,22 @@ public class Validator {
 
   public void validateIdToBorrowBook(String inputId)
       throws InvalidInputFormatException, InvalidIdException {
-    if (!inputId.matches("^[^/]*[/][^/]*$")) {
+    if (!inputId.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")) {
       throw new InvalidInputFormatException(
           "Invalid input format. Please use exactly one '/' character.");
     }
 
     String[] ids = inputId.split("/");
-    String bookIdStr = ids[0];
-    String readerIdStr = ids[1];
+    String bookIdStr = ids[0].trim();
+    String readerIdStr = ids[1].trim();
 
-    if (!bookIdStr.matches("\\d+") || !readerIdStr.matches("\\d+")) {
+    if (!bookIdStr.matches("^\\d+$") || !readerIdStr.matches("^\\d+$")) {
       throw new InvalidIdException("IDs must be positive int!");
     }
   }
 
   public void validateSingleId(String inputId) throws InvalidIdException {
-    if (!inputId.matches("^-?\\d+$")) {
+    if (!inputId.matches("^\\s*\\d+\\s*$")) {
       throw new InvalidIdException("Book ID must be only 1 int value!");
     }
   }
