@@ -1,75 +1,73 @@
 package service;
 
-import exception.InvalidBookTitleException;
-import exception.InvalidIdException;
-import exception.InvalidInputFormatException;
-import exception.InvalidNameException;
+import exception.LibraryServiceException;
 
 public class Validator {
-  public void validateNewBookInputFormat(String book) throws InvalidInputFormatException {
-    if (!book.matches("^[^/]*\\/[^/]*$")) {
-      throw new InvalidInputFormatException(
+  public void validateNewBookInputFormat(String book) {
+    if (!book.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")) {
+      throw new LibraryServiceException(
           "Invalid input format. Please use letters and exactly one '/' character.");
     }
   }
 
-  public void validateName(String name) throws InvalidNameException {
-    int nameLength = name.length();
-
+  public void validateName(String name) {
+    var NameValidatorCounter = 0;
+    var nameLength = name.length();
     if (!name.matches(".*[a-zA-Z].*")) {
-      throw new InvalidNameException("Name must contain at least one English letter!");
+      NameValidatorCounter++;
     }
 
     if (!name.matches("^[a-zA-Z\\s'-]+$")) {
-      throw new InvalidNameException(
-          "Name must contain only English letters, spaces, dashes, and apostrophes!");
+      NameValidatorCounter++;
     }
 
     if (nameLength < 5) {
-      throw new InvalidNameException("Name must be longer than 5 characters!");
+      NameValidatorCounter++;
     }
 
     if (nameLength > 30) {
-      throw new InvalidNameException("Name must be shorter than 30 characters!");
+      NameValidatorCounter++;
+    }
+    if (NameValidatorCounter != 0) {
+      throw new LibraryServiceException(
+          "Name must be longer than 5 characters, shorter than 30 characters and must contain only ENGLISH letters, spaces, dashes, apostrophes");
     }
   }
 
-  public void validateBookTitle(String bookTitle) throws InvalidBookTitleException {
-    int bookTitleLength = bookTitle.length();
+  public void validateBookTitle(String bookTitle) {
+    var BookTitleValidatorCounter = 0;
+    var bookTitleLength = bookTitle.length();
 
     if (bookTitle.matches(".*[|/\\\\#%=+*_><].*")) {
-      throw new InvalidBookTitleException(
-          "Book title must not contain the following characters: |/\\#%=+*_><");
+      BookTitleValidatorCounter++;
     }
 
     if (bookTitleLength < 5) {
-      throw new InvalidBookTitleException("Book title must be longer than 5 characters!");
+      BookTitleValidatorCounter++;
     }
 
     if (bookTitleLength > 100) {
-      throw new InvalidBookTitleException("Book title must be shorter than 100 characters!");
+      BookTitleValidatorCounter++;
+    }
+    if (BookTitleValidatorCounter != 0) {
+      throw new LibraryServiceException(
+          "Book title must be written using ENGLISH letters, longer than 5 characters, shorter than 100 characters and must not contain the following characters: |/\\#%=+*_><");
     }
   }
 
-  public void validateIdToBorrowBook(String inputId)
-      throws InvalidInputFormatException, InvalidIdException {
-    if (!inputId.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")) {
-      throw new InvalidInputFormatException(
-          "Invalid input format. Please use exactly one '/' character.");
-    }
-
+  public void validateIdToBorrowBook(String inputId) {
     String[] ids = inputId.split("/");
-    String bookIdStr = ids[0].trim();
-    String readerIdStr = ids[1].trim();
+    var bookIdStr = ids[0].trim();
+    var readerIdStr = ids[1].trim();
 
-    if (!bookIdStr.matches("^\\d+$") || !readerIdStr.matches("^\\d+$")) {
-      throw new InvalidIdException("IDs must be positive int!");
+    if (!bookIdStr.matches("^[1-9]\\d*$") || !readerIdStr.matches("^[1-9]\\d*$")) {
+      throw new LibraryServiceException("Book ID and Reader ID must be POSITIVE INT values");
     }
   }
 
-  public void validateSingleId(String inputId) throws InvalidIdException {
-    if (!inputId.matches("^\\s*\\d+\\s*$")) {
-      throw new InvalidIdException("Book ID must be only 1 int value!");
+  public void validateSingleId(String inputId) {
+    if (!inputId.matches("^[1-9]\\d*\\s*$")) {
+      throw new LibraryServiceException("Book ID must be only 1 POSITIVE INT int value");
     }
   }
 }

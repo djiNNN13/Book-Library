@@ -2,10 +2,7 @@ package ui;
 
 import entity.Book;
 import entity.Reader;
-import exception.InvalidBookTitleException;
-import exception.InvalidIdException;
-import exception.InvalidInputFormatException;
-import exception.InvalidNameException;
+import exception.LibraryServiceException;
 import service.LibraryService;
 
 import java.util.List;
@@ -51,10 +48,7 @@ public class Menu {
           default -> System.err.println(
               "Invalid option, please write correct option from the menu.");
         }
-      } catch (InvalidNameException
-          | InvalidIdException
-          | InvalidInputFormatException
-          | InvalidBookTitleException ex) {
+      } catch (LibraryServiceException ex) {
         System.err.println(ex.getMessage());
       }
       System.out.println(SEPARATOR);
@@ -73,10 +67,10 @@ public class Menu {
     System.out.print(SET_DEFAULT_TEXT_COLOR);
   }
 
-  private void addNewReader() throws InvalidNameException {
+  private void addNewReader() throws LibraryServiceException {
     System.out.println("Please enter new reader full name!");
 
-    String readerName = scanner.nextLine();
+    var readerName = scanner.nextLine().trim();
     libraryService.addNewReader(readerName);
 
     System.out.println(
@@ -88,10 +82,10 @@ public class Menu {
   }
 
   private void addNewBook()
-      throws InvalidNameException, InvalidBookTitleException, InvalidInputFormatException {
+      throws LibraryServiceException {
     System.out.println("Please enter new book name and author separated by “/”");
 
-    String book = scanner.nextLine();
+    var book = scanner.nextLine().trim();
     libraryService.addNewBook(book);
 
     System.out.println(
@@ -102,10 +96,10 @@ public class Menu {
             + SET_DEFAULT_TEXT_COLOR);
   }
 
-  private void borrowBook() throws InvalidInputFormatException, InvalidIdException {
+  private void borrowBook() throws LibraryServiceException {
     System.out.println("Please enter book ID and reader ID separated by “/” to borrow a book.");
 
-    String bookIdAndReaderId = scanner.nextLine();
+    String bookIdAndReaderId = scanner.nextLine().trim();
     libraryService.borrowBook(bookIdAndReaderId);
 
     System.out.println(
@@ -116,10 +110,10 @@ public class Menu {
             + SET_DEFAULT_TEXT_COLOR);
   }
 
-  private void returnBookToLibrary() throws InvalidIdException {
+  private void returnBookToLibrary() throws LibraryServiceException {
     System.out.println("Please enter book ID to return a book.");
 
-    String bookToReturn = scanner.nextLine();
+    String bookToReturn = scanner.nextLine().trim();
     libraryService.returnBookToLibrary(bookToReturn);
 
     System.out.println(
@@ -130,10 +124,10 @@ public class Menu {
             + SET_DEFAULT_TEXT_COLOR);
   }
 
-  private void showBorrowedBooksByReaderId() throws InvalidIdException {
+  private void showBorrowedBooksByReaderId() throws LibraryServiceException {
     System.out.println("Please enter reader ID to show all his borrowed books");
 
-    String readerId = scanner.nextLine();
+    var readerId = scanner.nextLine().trim();
     List<Book> borrowedBooks = libraryService.showBorrowedBooks(readerId);
 
     if (borrowedBooks.isEmpty()) {
@@ -149,10 +143,10 @@ public class Menu {
     }
   }
 
-  private void showCurrentReaderOfBookById() throws InvalidIdException {
+  private void showCurrentReaderOfBookById() throws LibraryServiceException {
     System.out.println("Please enter book ID to show all his readers");
 
-    String bookId = scanner.nextLine();
+    var bookId = scanner.nextLine().trim();
     Optional<Reader> reader = libraryService.showCurrentReaderOfBook(bookId);
 
     if (reader.isEmpty()) {

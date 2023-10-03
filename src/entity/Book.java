@@ -10,11 +10,11 @@ public class Book {
   private final String author;
   private long readerId;
 
-  public Book(String name, String author, long readerId) {
+  public Book(String name, String author) {
     this.id = count.incrementAndGet();
     this.name = name;
     this.author = author;
-    this.readerId = readerId;
+    readerId = 0;
   }
 
   public long getId() {

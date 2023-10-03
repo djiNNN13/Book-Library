@@ -6,10 +6,7 @@ import dao.ReaderDao;
 import dao.ReaderDaoImpl;
 import entity.Book;
 import entity.Reader;
-import exception.InvalidBookTitleException;
-import exception.InvalidIdException;
-import exception.InvalidInputFormatException;
-import exception.InvalidNameException;
+import exception.LibraryServiceException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,76 +26,61 @@ public class LibraryService {
     return readerDao.findAll();
   }
 
-  public Optional<Reader> showCurrentReaderOfBook(String bookIdToCheck) throws InvalidIdException {
+  public Optional<Reader> showCurrentReaderOfBook(String bookIdToCheck) {
     validator.validateSingleId(bookIdToCheck);
 
-    long bookId = Long.parseLong(bookIdToCheck.trim());
-    bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
+    var bookId = Long.parseLong(bookIdToCheck.trim());
+    bookDao.findById(bookId).orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
 
-    long readerId = bookDao.findReaderIdByBookId(bookId);
+    var readerId = bookDao.findReaderIdByBookId(bookId);
     if (readerId == 0L) {
       return Optional.empty();
     }
-    readerDao.findById(readerId).orElseThrow(() -> new InvalidIdException(READER_NOT_FOUND));
+    readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
 
     return readerDao.findById(readerId);
   }
 
-  public List<Book> showBorrowedBooks(String readerIdToCheck) throws InvalidIdException {
+  public List<Book> showBorrowedBooks(String readerIdToCheck) {
     validator.validateSingleId(readerIdToCheck);
 
-    long readerId = Long.parseLong(readerIdToCheck.trim());
-    readerDao.findById(readerId).orElseThrow(() -> new InvalidIdException(READER_NOT_FOUND));
+    var readerId = Long.parseLong(readerIdToCheck.trim());
+    readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
 
     return bookDao.findAllByReaderId(readerId);
   }
 
-  public void addNewReader(String readerName) throws InvalidNameException {
+  public void addNewReader(String readerName) {
     validator.validateName(readerName);
     readerDao.save(new Reader(readerName));
   }
 
-  public void addNewBook(String book)
-      throws InvalidBookTitleException, InvalidNameException, InvalidInputFormatException {
+  public void addNewBook(String book) {
     validator.validateNewBookInputFormat(book);
 
     String[] bookAndAuthor = book.split("/");
-    String bookTitle = bookAndAuthor[0];
-    String authorName = bookAndAuthor[1];
+    var bookTitle = bookAndAuthor[0].trim();
+    var authorName = bookAndAuthor[1].trim();
 
     validator.validateBookTitle(bookTitle);
     validator.validateName(authorName);
-    bookDao.save(new Book(bookTitle, authorName, 0));
+    bookDao.save(new Book(bookTitle, authorName));
   }
 
-  public void borrowBook(String bookIdAndReaderId)
-      throws InvalidInputFormatException, InvalidIdException {
+  public void borrowBook(String bookIdAndReaderId) {
     validator.validateIdToBorrowBook(bookIdAndReaderId);
 
     String[] ids = bookIdAndReaderId.split("/");
+    var bookId = Long.parseLong(ids[0].trim());
+    var readerId = Long.parseLong(ids[1].trim());
+    readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
 
-    long bookId = Long.parseLong(ids[0].trim());
-    bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
-
-    long readerId = Long.parseLong(ids[1].trim());
-    readerDao.findById(readerId).orElseThrow(() -> new InvalidIdException(READER_NOT_FOUND));
-
-    if (bookDao.findReaderIdByBookId(bookId) != 0L) {
-      throw new InvalidIdException("Cannot borrow already borrowed Book!");
-    }
     bookDao.borrowBook(bookId, readerId);
   }
 
-  public void returnBookToLibrary(String bookIdToReturn) throws InvalidIdException {
+  public void returnBookToLibrary(String bookIdToReturn) throws LibraryServiceException {
     validator.validateSingleId(bookIdToReturn);
-
-    long bookId = Long.parseLong(bookIdToReturn);
-    bookDao.findById(bookId).orElseThrow(() -> new InvalidIdException(BOOK_NOT_FOUND));
-
-    if (bookDao.findReaderIdByBookId(bookId) == 0L) {
-      throw new InvalidIdException("Cannot return Book. Book is already in the Library!");
-    }
-
+    var bookId = Long.parseLong(bookIdToReturn.trim());
     bookDao.returnBookToLibrary(bookId);
   }
 }

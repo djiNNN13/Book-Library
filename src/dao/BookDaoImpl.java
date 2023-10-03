@@ -1,20 +1,20 @@
 package dao;
 
 import entity.Book;
-import entity.Reader;
+import exception.LibraryServiceException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class BookDaoImpl implements BookDao {
   private final List<Book> books = new ArrayList<>();
+  private static final String BOOK_NOT_FOUND = "This Book ID doesn't exist!";
 
   public BookDaoImpl() {
-    save(new Book("1984", "George Orwell", 0));
-    save(new Book("Home", "Tony Morrsion", 0));
-    save(new Book("Glue", "Irvine Welsh", 0));
+    save(new Book("1984", "George Orwell"));
+    save(new Book("Home", "Tony Morrsion"));
+    save(new Book("Glue", "Irvine Welsh"));
   }
 
   @Override
@@ -25,7 +25,18 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public void returnBookToLibrary(long bookId) {
-    findById(bookId).get().setReaderId(0);
+    findById(bookId)
+        .ifPresentOrElse(
+            book -> {
+              if (findReaderIdByBookId(bookId) == 0L) {
+                throw new LibraryServiceException(
+                    "Cannot return Book. Book is already in the Library!");
+              }
+              book.setReaderId(0);
+            },
+            () -> {
+              throw new LibraryServiceException(BOOK_NOT_FOUND);
+            });
   }
 
   @Override
@@ -40,14 +51,22 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public void borrowBook(long bookId, long readerId) {
-    findById(bookId).get().setReaderId(readerId);
+    findById(bookId)
+        .ifPresentOrElse(
+            book -> {
+              if (findReaderIdByBookId(bookId) != 0L) {
+                throw new LibraryServiceException("Cannot borrow already borrowed Book!");
+              }
+              book.setReaderId(readerId);
+            },
+            () -> {
+              throw new LibraryServiceException(BOOK_NOT_FOUND);
+            });
   }
 
   @Override
   public List<Book> findAllByReaderId(long readerId) {
-    return findAll().stream()
-        .filter(book -> book.getReaderId() == readerId)
-        .collect(Collectors.toList());
+    return findAll().stream().filter(book -> book.getReaderId() == readerId).toList();
   }
 
   @Override
