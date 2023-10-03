@@ -11,47 +11,20 @@ public class Validator {
   }
 
   public void validateName(String name) {
-    var NameValidatorCounter = 0;
     var nameLength = name.length();
-    if (!name.matches(".*[a-zA-Z].*")) {
-      NameValidatorCounter++;
-    }
 
-    if (!name.matches("^[a-zA-Z\\s'-]+$")) {
-      NameValidatorCounter++;
-    }
-
-    if (nameLength < 5) {
-      NameValidatorCounter++;
-    }
-
-    if (nameLength > 30) {
-      NameValidatorCounter++;
-    }
-    if (NameValidatorCounter != 0) {
+    if (!name.matches("^[a-zA-Z\\s'-]+$") || nameLength < 5 || nameLength > 30) {
       throw new LibraryServiceException(
-          "Name must be longer than 5 characters, shorter than 30 characters and must contain only ENGLISH letters, spaces, dashes, apostrophes");
+              "Name must be longer than 5 characters, shorter than 30 characters and must contain only ENGLISH letters, spaces, dashes, apostrophes");
     }
   }
 
   public void validateBookTitle(String bookTitle) {
-    var BookTitleValidatorCounter = 0;
     var bookTitleLength = bookTitle.length();
 
-    if (bookTitle.matches(".*[|/\\\\#%=+*_><].*")) {
-      BookTitleValidatorCounter++;
-    }
-
-    if (bookTitleLength < 5) {
-      BookTitleValidatorCounter++;
-    }
-
-    if (bookTitleLength > 100) {
-      BookTitleValidatorCounter++;
-    }
-    if (BookTitleValidatorCounter != 0) {
+    if (bookTitle.matches(".*[|/\\\\#%=+*_><].*") || bookTitleLength < 5 || bookTitleLength > 100) {
       throw new LibraryServiceException(
-          "Book title must be written using ENGLISH letters, longer than 5 characters, shorter than 100 characters and must not contain the following characters: |/\\#%=+*_><");
+              "Book title must be written using ENGLISH letters, longer than 5 characters, shorter than 100 characters and must not contain the following characters: |/\\#%=+*_><");
     }
   }
 
