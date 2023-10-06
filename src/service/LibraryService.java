@@ -74,13 +74,21 @@ public class LibraryService {
     var bookId = Long.parseLong(ids[0].trim());
     var readerId = Long.parseLong(ids[1].trim());
     readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
+    if (bookDao.findReaderIdByBookId(bookId) != 0) {
+      throw new LibraryServiceException("Cannot borrow already borrowed Book!");
+    }
 
     bookDao.borrowBook(bookId, readerId);
   }
 
-  public void returnBookToLibrary(String bookIdToReturn) throws LibraryServiceException {
+  public void returnBookToLibrary(String bookIdToReturn) {
     validator.validateSingleId(bookIdToReturn);
+
     var bookId = Long.parseLong(bookIdToReturn.trim());
+    if (bookDao.findReaderIdByBookId(bookId) == 0L) {
+      throw new LibraryServiceException("Cannot return Book. Book is already in the Library!");
+    }
+
     bookDao.returnBookToLibrary(bookId);
   }
 }

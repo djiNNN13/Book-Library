@@ -29,6 +29,10 @@ public class Validator {
   }
 
   public void validateIdToBorrowBook(String inputId) {
+    if(!inputId.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")){
+      throw new LibraryServiceException("Invalid input format. Please use INTEGERS and exactly one '/' character.");
+    }
+
     String[] ids = inputId.split("/");
     var bookIdStr = ids[0].trim();
     var readerIdStr = ids[1].trim();

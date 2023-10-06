@@ -27,13 +27,7 @@ public class BookDaoImpl implements BookDao {
   public void returnBookToLibrary(long bookId) {
     findById(bookId)
         .ifPresentOrElse(
-            book -> {
-              if (findReaderIdByBookId(bookId) == 0L) {
-                throw new LibraryServiceException(
-                    "Cannot return Book. Book is already in the Library!");
-              }
-              book.setReaderId(0);
-            },
+            book -> book.setReaderId(0),
             () -> {
               throw new LibraryServiceException(BOOK_NOT_FOUND);
             });
@@ -53,12 +47,7 @@ public class BookDaoImpl implements BookDao {
   public void borrowBook(long bookId, long readerId) {
     findById(bookId)
         .ifPresentOrElse(
-            book -> {
-              if (findReaderIdByBookId(bookId) != 0L) {
-                throw new LibraryServiceException("Cannot borrow already borrowed Book!");
-              }
-              book.setReaderId(readerId);
-            },
+            book -> book.setReaderId(readerId),
             () -> {
               throw new LibraryServiceException(BOOK_NOT_FOUND);
             });
@@ -71,6 +60,8 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public Long findReaderIdByBookId(long bookId) {
-    return findById(bookId).get().getReaderId();
+    return findById(bookId)
+        .map(Book::getReaderId)
+        .orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
   }
 }
