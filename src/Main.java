@@ -1,8 +1,8 @@
-import java.util.Scanner;
+import ui.Menu;
 
 public class Main {
   public static void main(String[] args) {
-    Menu menu = new Menu();
+    var menu = new Menu();
     menu.displayMenu();
   }
 }
