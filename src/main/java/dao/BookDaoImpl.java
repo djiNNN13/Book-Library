@@ -11,49 +11,35 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class BookDaoImpl implements BookDao {
-  private static final String SELECT_ALL_SQL = "SELECT id, name, author, reader_id FROM book";
-  private static final String INSERT_SQL = "INSERT INTO book(name, author) VALUES(?, ?)";
-  private static final String SELECT_BY_ID_SQL = "SELECT id, name, author, reader_id FROM book WHERE id = ?";
-  private static final String BORROW_BY_ID_SQL = "UPDATE book SET reader_id = ? WHERE id = ?";
-  private static final String RETURN_BY_ID_SQL = "UPDATE book SET reader_id = null WHERE id = ?";
-  private static final String SELECT_BOOK_BY_READER_ID_SQL =
-      "SELECT id, name, author, reader_id FROM book WHERE reader_id = ?";
-
   @Override
   public Book save(Book bookToSave) {
-    Objects.requireNonNull(bookToSave);
+    String INSERT_SQL = "INSERT INTO book(name, author) VALUES(?, ?)";
     try (var connection = DBUtil.getConnection();
-         var insertStatement = connection.prepareStatement(INSERT_SQL, PreparedStatement.RETURN_GENERATED_KEYS)
-    ) {
+        var insertStatement =
+            connection.prepareStatement(INSERT_SQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+      Objects.requireNonNull(bookToSave, "Cannot save null value book");
       insertStatement.setString(1, bookToSave.getName());
       insertStatement.setString(2, bookToSave.getAuthor());
       insertStatement.executeUpdate();
-      try(var generatedId = insertStatement.getGeneratedKeys()){
-        if (generatedId.next()){
-          if (generatedId.getLong(1) == 0){
-            throw new DaoOperationException("Book ID cannot be 0");
-          }
-          bookToSave.setId(generatedId.getLong(1));
-          return bookToSave;
-        }else {
-          throw new DaoOperationException("Cannot obtain book ID");
-        }
+      var generatedId = insertStatement.getGeneratedKeys();
+      if (generatedId.next()) {
+        bookToSave.setId(generatedId.getLong(1));
       }
+      return bookToSave;
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error saving book: %s", bookToSave), e);
+    } catch (NullPointerException e) {
+      throw new DaoOperationException(e.getMessage());
     }
   }
 
   @Override
   public void returnBook(long bookId) {
+    String RETURN_BY_ID_SQL = "UPDATE book SET reader_id = null WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-         var returnStatement = connection.prepareStatement(RETURN_BY_ID_SQL)
-    ) {
+        var returnStatement = connection.prepareStatement(RETURN_BY_ID_SQL)) {
       returnStatement.setLong(1, bookId);
-      var affectedRows = returnStatement.executeUpdate();
-      if (affectedRows == 0){
-        throw new DaoOperationException(String.format("Book with id = %d doesn't exists", bookId));
-      }
+      returnStatement.executeUpdate();
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error returning book with id: %d", bookId), e);
     }
@@ -61,17 +47,16 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public Optional<Book> findById(long bookId) {
+    String SELECT_BY_ID_SQL = "SELECT id, name, author, reader_id FROM book WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-         var selectByIdStatement = connection.prepareStatement(SELECT_BY_ID_SQL)
-    ) {
+        var selectByIdStatement = connection.prepareStatement(SELECT_BY_ID_SQL)) {
       selectByIdStatement.setLong(1, bookId);
-      try(var resultSet = selectByIdStatement.executeQuery()){
-        if (resultSet.next()){
-          var book = parseRow(resultSet);
-          return Optional.of(book);
-        }else {
-          return Optional.empty();
-        }
+      var resultSet = selectByIdStatement.executeQuery();
+      if (resultSet.next()) {
+        var book = mapResultSetToBook(resultSet);
+        return Optional.of(book);
+      } else {
+        return Optional.empty();
       }
     } catch (SQLException e) {
       throw new DaoOperationException(
@@ -81,12 +66,11 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public List<Book> findAll() {
+    String SELECT_ALL_SQL = "SELECT id, name, author, reader_id FROM book";
     try (var connection = DBUtil.getConnection();
-         var statement = connection.createStatement()
-    ) {
-      try(var resultSet = statement.executeQuery(SELECT_ALL_SQL)){
-        return collectToList(resultSet);
-      }
+        var statement = connection.createStatement()) {
+      var resultSet = statement.executeQuery(SELECT_ALL_SQL);
+      return collectToList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding all books", e);
     }
@@ -95,13 +79,13 @@ public class BookDaoImpl implements BookDao {
   private List<Book> collectToList(ResultSet resultSet) throws SQLException {
     List<Book> books = new ArrayList<>();
     while (resultSet.next()) {
-      var book = parseRow(resultSet);
+      var book = mapResultSetToBook(resultSet);
       books.add(book);
     }
     return books;
   }
 
-  private Book parseRow(ResultSet resultSet) {
+  private Book mapResultSetToBook(ResultSet resultSet) {
     try {
       var book = new Book();
       book.setId(resultSet.getLong("id"));
@@ -116,15 +100,12 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public void borrow(long bookId, long readerId) {
+    String BORROW_BY_ID_SQL = "UPDATE book SET reader_id = ? WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-         var borrowStatement = connection.prepareStatement(BORROW_BY_ID_SQL)
-    ) {
+        var borrowStatement = connection.prepareStatement(BORROW_BY_ID_SQL)) {
       borrowStatement.setLong(1, readerId);
       borrowStatement.setLong(2, bookId);
-      var affectedRows = borrowStatement.executeUpdate();
-      if (affectedRows == 0){
-        throw new DaoOperationException(String.format("Book with id = %d doesn't exists", bookId));
-      }
+      borrowStatement.executeUpdate();
     } catch (SQLException e) {
       throw new DaoOperationException(
           String.format("Error borrowing book with id: %d for reader id: %d", bookId, readerId), e);
@@ -133,9 +114,10 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public List<Book> findAllByReaderId(long readerId) {
+    String SELECT_BOOK_BY_READER_ID_SQL =
+        "SELECT id, name, author, reader_id FROM book WHERE reader_id = ?";
     try (var connection = DBUtil.getConnection();
-         var selectByReaderIdStatement = connection.prepareStatement(SELECT_BOOK_BY_READER_ID_SQL)
-    ) {
+        var selectByReaderIdStatement = connection.prepareStatement(SELECT_BOOK_BY_READER_ID_SQL)) {
       selectByReaderIdStatement.setLong(1, readerId);
       var resultSet = selectByReaderIdStatement.executeQuery();
       return collectToList(resultSet);

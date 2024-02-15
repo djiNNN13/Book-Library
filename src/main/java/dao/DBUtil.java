@@ -20,18 +20,16 @@ public class DBUtil {
         return properties;
     }
 
-    public static Connection getConnection(){
-        Connection connection = null;
-
+    public static Connection getConnection() {
         String url = properties.getProperty("db.conn.url");
         String userName = properties.getProperty("db.username");
         String password = properties.getProperty("db.password");
 
-        try{
-            connection = DriverManager.getConnection(url, userName, password);
+        try {
+            return DriverManager.getConnection(url, userName, password);
         } catch (SQLException e) {
-            System.err.println("Cannot create database connection " + e.getMessage());
+            System.exit(0);
+            throw new RuntimeException("Unable to establish database connection", e);
         }
-        return connection;
     }
 }
