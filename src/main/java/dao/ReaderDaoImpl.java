@@ -28,7 +28,8 @@ public class ReaderDaoImpl implements ReaderDao {
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error saving reader: %s", readerToSave), e);
     } catch (NullPointerException e) {
-      throw new DaoOperationException(e.getMessage());
+      throw new DaoOperationException("Null pointer exception occurred while attempting to save the reader. " +
+              "Please ensure that the reader object is not null.");
     }
   }
 
