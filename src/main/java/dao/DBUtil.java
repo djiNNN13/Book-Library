@@ -28,8 +28,7 @@ public class DBUtil {
         try {
             return DriverManager.getConnection(url, userName, password);
         } catch (SQLException e) {
-            System.exit(0);
-            throw new RuntimeException("Unable to establish database connection", e);
+            throw new RuntimeException("Unable to establish database connection, please come later", e);
         }
     }
 }

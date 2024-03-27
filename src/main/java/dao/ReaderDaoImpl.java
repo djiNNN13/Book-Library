@@ -13,10 +13,10 @@ import java.util.Optional;
 public class ReaderDaoImpl implements ReaderDao {
   @Override
   public Reader save(Reader readerToSave) {
-    String INSERT_SQL = "INSERT INTO reader(name) VALUES(?)";
+    var insertSql = "INSERT INTO reader(name) VALUES(?)";
     try (var connection = DBUtil.getConnection();
         var updateStatement =
-            connection.prepareStatement(INSERT_SQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            connection.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
       Objects.requireNonNull(readerToSave, "Cannot save null value reader");
       updateStatement.setString(1, readerToSave.getName());
       updateStatement.executeUpdate();
@@ -34,9 +34,9 @@ public class ReaderDaoImpl implements ReaderDao {
 
   @Override
   public Optional<Reader> findById(long readerId) {
-    String SELECT_BY_ID_SQL = "SELECT id, name FROM reader WHERE id = ?";
+    var selectByIdSql = "SELECT id, name FROM reader WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-        var selectByIdStatement = connection.prepareStatement(SELECT_BY_ID_SQL)) {
+        var selectByIdStatement = connection.prepareStatement(selectByIdSql)) {
       selectByIdStatement.setLong(1, readerId);
       var resultSet = selectByIdStatement.executeQuery();
       if (resultSet.next()) {
@@ -64,10 +64,10 @@ public class ReaderDaoImpl implements ReaderDao {
 
   @Override
   public List<Reader> findAll() {
-    String SELECT_ALL_SQL = "SELECT id, name FROM reader";
+    var selectAllSql = "SELECT id, name FROM reader";
     try (var connection = DBUtil.getConnection();
         var selectAllStatement = connection.createStatement()) {
-      var resultSet = selectAllStatement.executeQuery(SELECT_ALL_SQL);
+      var resultSet = selectAllStatement.executeQuery(selectAllSql);
       return collectToList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding all readers", e);
@@ -85,10 +85,10 @@ public class ReaderDaoImpl implements ReaderDao {
 
   @Override
   public Optional<Reader> findReaderByBookId(long bookId) {
-    String SELECT_BY_BOOK_ID_SQL =
+    var selectByBookIdSql =
         "SELECT reader.id, reader.name FROM reader INNER JOIN book ON reader.id = book.reader_id WHERE book.id = ?";
     try (var connection = DBUtil.getConnection();
-        var selectReaderByBookStatement = connection.prepareStatement(SELECT_BY_BOOK_ID_SQL)) {
+        var selectReaderByBookStatement = connection.prepareStatement(selectByBookIdSql)) {
       selectReaderByBookStatement.setLong(1, bookId);
       var resultSet = selectReaderByBookStatement.executeQuery();
       if (resultSet.next()) {

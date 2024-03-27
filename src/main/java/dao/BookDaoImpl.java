@@ -13,10 +13,10 @@ import java.util.Optional;
 public class BookDaoImpl implements BookDao {
   @Override
   public Book save(Book bookToSave) {
-    String INSERT_SQL = "INSERT INTO book(name, author) VALUES(?, ?)";
+    var insertSql = "INSERT INTO book(name, author) VALUES(?, ?)";
     try (var connection = DBUtil.getConnection();
         var insertStatement =
-            connection.prepareStatement(INSERT_SQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            connection.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
       Objects.requireNonNull(bookToSave, "Cannot save null value book");
       insertStatement.setString(1, bookToSave.getName());
       insertStatement.setString(2, bookToSave.getAuthor());
@@ -29,15 +29,16 @@ public class BookDaoImpl implements BookDao {
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error saving book: %s", bookToSave), e);
     } catch (NullPointerException e) {
-      throw new DaoOperationException(e.getMessage());
+      throw new DaoOperationException("Null pointer exception occurred while attempting to save the book. " +
+              "Please ensure that the book object is not null.");
     }
   }
 
   @Override
   public void returnBook(long bookId) {
-    String RETURN_BY_ID_SQL = "UPDATE book SET reader_id = null WHERE id = ?";
+    var returnByIdSql = "UPDATE book SET reader_id = null WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-        var returnStatement = connection.prepareStatement(RETURN_BY_ID_SQL)) {
+        var returnStatement = connection.prepareStatement(returnByIdSql)) {
       returnStatement.setLong(1, bookId);
       returnStatement.executeUpdate();
     } catch (SQLException e) {
@@ -47,9 +48,9 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public Optional<Book> findById(long bookId) {
-    String SELECT_BY_ID_SQL = "SELECT id, name, author, reader_id FROM book WHERE id = ?";
+    var selectByIdSql = "SELECT id, name, author, reader_id FROM book WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-        var selectByIdStatement = connection.prepareStatement(SELECT_BY_ID_SQL)) {
+        var selectByIdStatement = connection.prepareStatement(selectByIdSql)) {
       selectByIdStatement.setLong(1, bookId);
       var resultSet = selectByIdStatement.executeQuery();
       if (resultSet.next()) {
@@ -66,10 +67,10 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public List<Book> findAll() {
-    String SELECT_ALL_SQL = "SELECT id, name, author, reader_id FROM book";
+    var selectAllSql = "SELECT id, name, author, reader_id FROM book";
     try (var connection = DBUtil.getConnection();
         var statement = connection.createStatement()) {
-      var resultSet = statement.executeQuery(SELECT_ALL_SQL);
+      var resultSet = statement.executeQuery(selectAllSql);
       return collectToList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding all books", e);
@@ -100,9 +101,9 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public void borrow(long bookId, long readerId) {
-    String BORROW_BY_ID_SQL = "UPDATE book SET reader_id = ? WHERE id = ?";
+    var borrowByIdSql = "UPDATE book SET reader_id = ? WHERE id = ?";
     try (var connection = DBUtil.getConnection();
-        var borrowStatement = connection.prepareStatement(BORROW_BY_ID_SQL)) {
+        var borrowStatement = connection.prepareStatement(borrowByIdSql)) {
       borrowStatement.setLong(1, readerId);
       borrowStatement.setLong(2, bookId);
       borrowStatement.executeUpdate();
@@ -114,10 +115,10 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public List<Book> findAllByReaderId(long readerId) {
-    String SELECT_BOOK_BY_READER_ID_SQL =
+    var selectBookByReaderIdSql =
         "SELECT id, name, author, reader_id FROM book WHERE reader_id = ?";
     try (var connection = DBUtil.getConnection();
-        var selectByReaderIdStatement = connection.prepareStatement(SELECT_BOOK_BY_READER_ID_SQL)) {
+        var selectByReaderIdStatement = connection.prepareStatement(selectBookByReaderIdSql)) {
       selectByReaderIdStatement.setLong(1, readerId);
       var resultSet = selectByReaderIdStatement.executeQuery();
       return collectToList(resultSet);
