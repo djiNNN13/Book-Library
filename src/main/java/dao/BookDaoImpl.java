@@ -71,13 +71,13 @@ public class BookDaoImpl implements BookDao {
     try (var connection = DBUtil.getConnection();
         var statement = connection.createStatement()) {
       var resultSet = statement.executeQuery(selectAllSql);
-      return collectToList(resultSet);
+      return mapResultSetToBooksList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding all books", e);
     }
   }
 
-  private List<Book> collectToList(ResultSet resultSet) throws SQLException {
+  private List<Book> mapResultSetToBooksList(ResultSet resultSet) throws SQLException {
     List<Book> books = new ArrayList<>();
     while (resultSet.next()) {
       var book = mapResultSetToBook(resultSet);
@@ -121,7 +121,7 @@ public class BookDaoImpl implements BookDao {
         var selectByReaderIdStatement = connection.prepareStatement(selectBookByReaderIdSql)) {
       selectByReaderIdStatement.setLong(1, readerId);
       var resultSet = selectByReaderIdStatement.executeQuery();
-      return collectToList(resultSet);
+      return mapResultSetToBooksList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException(
           String.format("Error finding all books by reader id: %d", readerId), e);
