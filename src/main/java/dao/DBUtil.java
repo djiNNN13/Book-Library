@@ -1,6 +1,6 @@
 package dao;
 
-import exception.DbUtilOperationException;
+import exception.DBConfigurationError;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class DBUtil {
     try (InputStream inputStream = new FileInputStream("src/main/resources/db/db.properties")) {
       properties.load(inputStream);
     } catch (IOException e) {
-      System.err.println("Cannot find database properties file " + e.getMessage());
+      throw new DBConfigurationError("Unable to read properties from database file, please come later", e);
     }
     return properties;
   }
@@ -31,7 +31,7 @@ public class DBUtil {
     try {
       return DriverManager.getConnection(url, userName, password);
     } catch (SQLException e) {
-      throw new DbUtilOperationException(
+      throw new DBConfigurationError(
           "Unable to establish database connection, please come later", e);
     }
   }

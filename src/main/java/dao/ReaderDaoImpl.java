@@ -69,13 +69,13 @@ public class ReaderDaoImpl implements ReaderDao {
     try (var connection = DBUtil.getConnection();
         var selectAllStatement = connection.createStatement()) {
       var resultSet = selectAllStatement.executeQuery(selectAllSql);
-      return collectToList(resultSet);
+      return mapResultSetToReadersList(resultSet);
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding all readers", e);
     }
   }
 
-  private List<Reader> collectToList(ResultSet resultSet) throws SQLException {
+  private List<Reader> mapResultSetToReadersList(ResultSet resultSet) throws SQLException {
     List<Reader> readers = new ArrayList<>();
     while (resultSet.next()) {
       var reader = mapResultSetToReader(resultSet);
