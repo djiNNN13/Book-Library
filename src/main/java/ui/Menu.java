@@ -2,6 +2,8 @@ package ui;
 
 import entity.Book;
 import entity.Reader;
+import exception.DBConfigurationError;
+import exception.DaoOperationException;
 import exception.LibraryServiceException;
 import service.LibraryService;
 
@@ -48,8 +50,11 @@ public class Menu {
           default -> System.err.println(
               "Invalid option, please write correct option from the menu.");
         }
-      } catch (LibraryServiceException ex) {
+      } catch (LibraryServiceException | DaoOperationException ex) {
         System.err.println(ex.getMessage());
+      } catch (DBConfigurationError ex){
+        System.err.println(ex.getMessage());
+        System.exit(0);
       }
       System.out.println(SEPARATOR);
     }
