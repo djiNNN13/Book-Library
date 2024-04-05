@@ -202,7 +202,8 @@ public class Menu {
             System.out.println(
                 book + ":" + SET_GREEN_TEXT_COLOR + "available" + SET_DEFAULT_TEXT_COLOR);
           } else {
-            System.out.println(SET_GREEN_TEXT_COLOR + book + ": " + reader.getName() + SET_DEFAULT_TEXT_COLOR);
+            System.out.println(
+                SET_GREEN_TEXT_COLOR + book + ": " + reader.getName() + SET_DEFAULT_TEXT_COLOR);
           }
         });
   }
