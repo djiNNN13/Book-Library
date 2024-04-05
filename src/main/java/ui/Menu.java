@@ -177,14 +177,19 @@ public class Menu {
     map.forEach(
         (reader, books) -> {
           if (books.get(0).getName() == null) {
-            System.out.println(reader.getName() + ": no books borrowed");
+            System.out.println(
+                reader.getName()
+                    + ":"
+                    + SET_GREEN_TEXT_COLOR
+                    + "no books borrowed"
+                    + SET_DEFAULT_TEXT_COLOR);
           } else {
-            System.out.print(reader.getName() + ": ");
+            System.out.print(SET_GREEN_TEXT_COLOR + reader.getName() + ": ");
             var booksInfo =
                 books.stream()
-                    .map(book -> book.getName() + " by " + book.getAuthor())
+                    .map(book -> SET_GREEN_TEXT_COLOR + book.getName() + " by " + book.getAuthor())
                     .collect(Collectors.joining(", "));
-            System.out.println(booksInfo);
+            System.out.println(booksInfo + SET_DEFAULT_TEXT_COLOR);
           }
         });
   }
@@ -194,9 +199,10 @@ public class Menu {
     map.forEach(
         (book, reader) -> {
           if (reader.getName() == null) {
-            System.out.println(book + ": available");
+            System.out.println(
+                book + ":" + SET_GREEN_TEXT_COLOR + "available" + SET_DEFAULT_TEXT_COLOR);
           } else {
-            System.out.println(book + ": " + reader.getName());
+            System.out.println(SET_GREEN_TEXT_COLOR + book + ": " + reader.getName() + SET_DEFAULT_TEXT_COLOR);
           }
         });
   }
