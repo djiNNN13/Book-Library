@@ -1,14 +1,12 @@
 package dao;
 
 import entity.Book;
+import entity.Reader;
 import exception.DaoOperationException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class BookDaoImpl implements BookDao {
   @Override
@@ -29,8 +27,9 @@ public class BookDaoImpl implements BookDao {
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error saving book: %s", bookToSave), e);
     } catch (NullPointerException e) {
-      throw new DaoOperationException("Null pointer exception occurred while attempting to save the book. " +
-              "Please ensure that the book object is not null.");
+      throw new DaoOperationException(
+          "Null pointer exception occurred while attempting to save the book. "
+              + "Please ensure that the book object is not null.");
     }
   }
 
@@ -125,6 +124,28 @@ public class BookDaoImpl implements BookDao {
     } catch (SQLException e) {
       throw new DaoOperationException(
           String.format("Error finding all books by reader id: %d", readerId), e);
+    }
+  }
+
+  @Override
+  public Map<Book, Reader> findAllWithReaders() {
+    var selectAllBooksWithReaders =
+        """
+                SELECT book.id, book.name, book.author, book.reader_id, reader.name AS readerName
+                FROM book LEFT JOIN reader ON book.reader_id = reader.id
+                     """;
+    try (var connection = DBUtil.getConnection();
+        var selectAllBooksWithReadersStatement = connection.createStatement()) {
+      var resultSet = selectAllBooksWithReadersStatement.executeQuery(selectAllBooksWithReaders);
+      Map<Book, Reader> map = new HashMap<>();
+      while (resultSet.next()) {
+        var readerName = resultSet.getString("readerName");
+        var reader = new Reader(readerName);
+        map.put(mapResultSetToBook(resultSet), reader);
+      }
+      return map;
+    } catch (SQLException e) {
+      throw new DaoOperationException("Error finding books with their readers!");
     }
   }
 }

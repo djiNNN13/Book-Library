@@ -1,14 +1,12 @@
 package dao;
 
+import entity.Book;
 import entity.Reader;
 import exception.DaoOperationException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class ReaderDaoImpl implements ReaderDao {
   @Override
@@ -28,8 +26,9 @@ public class ReaderDaoImpl implements ReaderDao {
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Error saving reader: %s", readerToSave), e);
     } catch (NullPointerException e) {
-      throw new DaoOperationException("Null pointer exception occurred while attempting to save the reader. " +
-              "Please ensure that the reader object is not null.");
+      throw new DaoOperationException(
+          "Null pointer exception occurred while attempting to save the reader. "
+              + "Please ensure that the reader object is not null.");
     }
   }
 
@@ -101,6 +100,27 @@ public class ReaderDaoImpl implements ReaderDao {
     } catch (SQLException e) {
       throw new DaoOperationException(
           String.format("Error finding reader by book id: %d", bookId), e);
+    }
+  }
+
+  @Override
+  public Map<Reader, List<Book>> findAllWithBooks() {
+    var selectAllReadersWithBooks =
+        """
+                SELECT reader.id, reader.name, book.name AS bookName, book.author AS authorName
+                FROM reader LEFT JOIN book ON reader.id = book.reader_id
+                """;
+    try (var connection = DBUtil.getConnection();
+        var selectAllReadersWithBooksStatement = connection.createStatement()) {
+      var resultSet = selectAllReadersWithBooksStatement.executeQuery(selectAllReadersWithBooks);
+      Map<Reader, List<Book>> map = new HashMap<>();
+      while (resultSet.next()) {
+        var book = new Book(resultSet.getString("bookName"), resultSet.getString("authorName"));
+        map.computeIfAbsent(mapResultSetToReader(resultSet), k -> new ArrayList<>()).add(book);
+      }
+      return map;
+    } catch (SQLException e) {
+      throw new DaoOperationException("Error finding readers with borrowed books list!");
     }
   }
 }

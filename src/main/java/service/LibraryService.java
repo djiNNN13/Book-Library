@@ -9,6 +9,7 @@ import entity.Reader;
 import exception.LibraryServiceException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class LibraryService {
@@ -89,5 +90,11 @@ public class LibraryService {
       throw new LibraryServiceException("Cannot return Book. Book is already in the Library!");
     }
     bookDao.returnBook(bookId);
+  }
+  public Map<Reader, List<Book>> findAllReadersWithBooks(){
+    return readerDao.findAllWithBooks();
+  }
+  public Map<Book, Reader> findAllBooksWithReaders(){
+    return bookDao.findAllWithReaders();
   }
 }
