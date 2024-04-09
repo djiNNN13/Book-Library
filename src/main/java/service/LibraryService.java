@@ -91,10 +91,12 @@ public class LibraryService {
     }
     bookDao.returnBook(bookId);
   }
-  public Map<Reader, List<Book>> findAllReadersWithBooks(){
+
+  public Map<Reader, List<Book>> findAllReadersWithBooks() {
     return readerDao.findAllWithBooks();
   }
-  public Map<Book, Reader> findAllBooksWithReaders(){
+
+  public Map<Book, Optional<Reader>> findAllBooksWithReaders() {
     return bookDao.findAllWithReaders();
   }
 }

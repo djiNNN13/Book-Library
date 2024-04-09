@@ -19,5 +19,6 @@ public interface BookDao {
   void borrow(long bookId, long readerId);
 
   List<Book> findAllByReaderId(long readerId);
-  Map<Book, Reader> findAllWithReaders();
+
+  Map<Book, Optional<Reader>> findAllWithReaders();
 }

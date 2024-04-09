@@ -1,12 +1,11 @@
 package entity;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Book {
   private long id;
   private String name;
-  private  String author;
+  private String author;
   private long readerId;
 
   public Book(String name, String author) {
@@ -14,8 +13,7 @@ public class Book {
     this.author = author;
   }
 
-  public Book() {
-  }
+  public Book() {}
 
   public void setReaderId(long readerId) {
     this.readerId = readerId;

@@ -176,15 +176,15 @@ public class Menu {
     Map<Reader, List<Book>> map = libraryService.findAllReadersWithBooks();
     map.forEach(
         (reader, books) -> {
-          if (books.get(0).getName() == null) {
+          if (books.isEmpty()) {
             System.out.println(
                 reader.getName()
-                    + ":"
+                    + " : "
                     + SET_GREEN_TEXT_COLOR
                     + "no books borrowed"
                     + SET_DEFAULT_TEXT_COLOR);
           } else {
-            System.out.print(SET_GREEN_TEXT_COLOR + reader.getName() + ": ");
+            System.out.print(SET_GREEN_TEXT_COLOR + reader.getName() + " : ");
             var booksInfo =
                 books.stream()
                     .map(book -> SET_GREEN_TEXT_COLOR + book.getName() + " by " + book.getAuthor())
@@ -195,17 +195,20 @@ public class Menu {
   }
 
   private void showAllBooksWithReaders() {
-    Map<Book, Reader> map = libraryService.findAllBooksWithReaders();
+    Map<Book, Optional<Reader>> map = libraryService.findAllBooksWithReaders();
     map.forEach(
-        (book, reader) -> {
-          if (reader.getName() == null) {
-            System.out.println(
-                book + ":" + SET_GREEN_TEXT_COLOR + "available" + SET_DEFAULT_TEXT_COLOR);
-          } else {
-            System.out.println(
-                SET_GREEN_TEXT_COLOR + book + ": " + reader.getName() + SET_DEFAULT_TEXT_COLOR);
-          }
-        });
+        (book, reader) ->
+            reader.ifPresentOrElse(
+                r ->
+                    System.out.println(
+                        SET_GREEN_TEXT_COLOR + book + " : " + r.getName() + SET_DEFAULT_TEXT_COLOR),
+                () ->
+                    System.out.println(
+                        book
+                            + " : "
+                            + SET_GREEN_TEXT_COLOR
+                            + "available"
+                            + SET_DEFAULT_TEXT_COLOR)));
   }
 
   private void exitFromMenu() {
