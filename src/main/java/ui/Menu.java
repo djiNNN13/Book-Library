@@ -10,6 +10,8 @@ import service.LibraryService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Menu {
   private static final String SET_GREEN_TEXT_COLOR = "\u001B[32m";
@@ -34,6 +36,8 @@ public class Menu {
                 [6] RETURN A BOOK TO THE LIBRARY
                 [7] SHOW ALL BORROWED BOOK BY USER ID
                 [8] SHOW CURRENT READER OF A BOOK WITH ID
+                [9] SHOW ALL READERS WITH THEIR BORROWED BOOKS
+                [10] SHOW ALL BOOKS WITH THEIR CURRENT READERS
             TYPE “EXIT” TO STOP THE PROGRAM AND EXIT!
                     """);
       try {
@@ -46,13 +50,15 @@ public class Menu {
           case "6" -> returnBookToLibrary();
           case "7" -> showBorrowedBooksByReaderId();
           case "8" -> showCurrentReaderOfBookById();
+          case "9" -> showAllReadersWithBorrowedBooks();
+          case "10" -> showAllBooksWithReaders();
           case "exit" -> exitFromMenu();
           default -> System.err.println(
               "Invalid option, please write correct option from the menu.");
         }
       } catch (LibraryServiceException | DaoOperationException ex) {
         System.err.println(ex.getMessage());
-      } catch (DBConfigurationError ex){
+      } catch (DBConfigurationError ex) {
         System.err.println(ex.getMessage());
         System.exit(0);
       }
@@ -86,8 +92,7 @@ public class Menu {
             + SET_DEFAULT_TEXT_COLOR);
   }
 
-  private void addNewBook()
-      throws LibraryServiceException {
+  private void addNewBook() throws LibraryServiceException {
     System.out.println("Please enter new book name and author separated by “/”");
 
     var book = scanner.nextLine().trim();
@@ -165,6 +170,45 @@ public class Menu {
               + reader.get()
               + SET_DEFAULT_TEXT_COLOR);
     }
+  }
+
+  private void showAllReadersWithBorrowedBooks() {
+    Map<Reader, List<Book>> map = libraryService.findAllReadersWithBooks();
+    map.forEach(
+        (reader, books) -> {
+          if (books.isEmpty()) {
+            System.out.println(
+                reader.getName()
+                    + " : "
+                    + SET_GREEN_TEXT_COLOR
+                    + "no books borrowed"
+                    + SET_DEFAULT_TEXT_COLOR);
+          } else {
+            System.out.print(SET_GREEN_TEXT_COLOR + reader.getName() + " : ");
+            var booksInfo =
+                books.stream()
+                    .map(book -> SET_GREEN_TEXT_COLOR + book.getName() + " by " + book.getAuthor())
+                    .collect(Collectors.joining(", "));
+            System.out.println(booksInfo + SET_DEFAULT_TEXT_COLOR);
+          }
+        });
+  }
+
+  private void showAllBooksWithReaders() {
+    Map<Book, Optional<Reader>> map = libraryService.findAllBooksWithReaders();
+    map.forEach(
+        (book, reader) ->
+            reader.ifPresentOrElse(
+                r ->
+                    System.out.println(
+                        SET_GREEN_TEXT_COLOR + book + " : " + r.getName() + SET_DEFAULT_TEXT_COLOR),
+                () ->
+                    System.out.println(
+                        book
+                            + " : "
+                            + SET_GREEN_TEXT_COLOR
+                            + "available"
+                            + SET_DEFAULT_TEXT_COLOR)));
   }
 
   private void exitFromMenu() {

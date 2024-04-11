@@ -1,8 +1,10 @@
 package dao;
 
 import entity.Book;
+import entity.Reader;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface BookDao {
@@ -17,4 +19,6 @@ public interface BookDao {
   void borrow(long bookId, long readerId);
 
   List<Book> findAllByReaderId(long readerId);
+
+  Map<Book, Optional<Reader>> findAllWithReaders();
 }
