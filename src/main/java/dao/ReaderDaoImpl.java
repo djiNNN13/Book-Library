@@ -107,7 +107,10 @@ public class ReaderDaoImpl implements ReaderDao {
       var resultSet = selectAllReadersWithBooksStatement.executeQuery(query);
       Map<Reader, List<Book>> map = new HashMap<>();
       while (resultSet.next()) {
-        var borrowedBooks =  map.computeIfAbsent(DaoUtils.mapResultSetToReader(resultSet), k -> new ArrayList<>());
+        var borrowedBooks =  map.computeIfAbsent(
+                DaoUtils.mapResultSetToReader(resultSet),
+                k -> new ArrayList<>()
+        );
         if (resultSet.getString("bookName") != null) {
           var book = DaoUtils.mapResultSetToBook(resultSet);
           borrowedBooks.add(book);
