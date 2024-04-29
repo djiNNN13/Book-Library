@@ -107,10 +107,8 @@ public class ReaderDaoImpl implements ReaderDao {
       var resultSet = selectAllReadersWithBooksStatement.executeQuery(query);
       Map<Reader, List<Book>> map = new HashMap<>();
       while (resultSet.next()) {
-        var borrowedBooks =  map.computeIfAbsent(
-                DaoUtils.mapResultSetToReader(resultSet),
-                k -> new ArrayList<>()
-        );
+        var borrowedBooks =
+            map.computeIfAbsent(DaoUtils.mapResultSetToReader(resultSet), k -> new ArrayList<>());
         if (resultSet.getString("bookName") != null) {
           var book = DaoUtils.mapResultSetToBook(resultSet);
           borrowedBooks.add(book);
@@ -119,6 +117,18 @@ public class ReaderDaoImpl implements ReaderDao {
       return map;
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding readers with borrowed books list!");
+    }
+  }
+
+  @Override
+  public void deleteById(long readerId) {
+    var query = "DELETE FROM reader WHERE id = ?";
+    try (var connection = DBUtil.getConnection();
+        var deleteByIdStatement = connection.prepareStatement(query)) {
+      deleteByIdStatement.setLong(1, readerId);
+      deleteByIdStatement.executeUpdate();
+    } catch (SQLException ex) {
+      throw new DaoOperationException("Error deleting reader from database!");
     }
   }
 }

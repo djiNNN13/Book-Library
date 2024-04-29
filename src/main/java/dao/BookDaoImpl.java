@@ -46,7 +46,8 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public Optional<Book> findById(long bookId) {
-    var query = "SELECT id AS bookId, name AS bookName, author AS bookAuthor, reader_id FROM book WHERE id = ?";
+    var query =
+        "SELECT id AS bookId, name AS bookName, author AS bookAuthor, reader_id FROM book WHERE id = ?";
     try (var connection = DBUtil.getConnection();
         var selectByIdStatement = connection.prepareStatement(query)) {
       selectByIdStatement.setLong(1, bookId);
@@ -130,7 +131,7 @@ public class BookDaoImpl implements BookDao {
       var resultSet = selectAllBooksWithReadersStatement.executeQuery(query);
       Map<Book, Optional<Reader>> map = new HashMap<>();
       while (resultSet.next()) {
-        if (resultSet.getString("readerName") != null){
+        if (resultSet.getString("readerName") != null) {
           var reader = DaoUtils.mapResultSetToReader(resultSet);
           map.put(DaoUtils.mapResultSetToBook(resultSet), Optional.of(reader));
         } else {
@@ -140,6 +141,18 @@ public class BookDaoImpl implements BookDao {
       return map;
     } catch (SQLException e) {
       throw new DaoOperationException("Error finding books with their readers!");
+    }
+  }
+
+  @Override
+  public void deleteById(long bookId) {
+    var query = "DELETE FROM book WHERE id = ?";
+    try (var connection = DBUtil.getConnection();
+        var deleteByIdStatement = connection.prepareStatement(query)) {
+      deleteByIdStatement.setLong(1, bookId);
+      deleteByIdStatement.executeUpdate();
+    } catch (SQLException ex) {
+      throw new DaoOperationException("Error deleting book from database!");
     }
   }
 }

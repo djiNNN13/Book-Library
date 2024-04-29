@@ -13,6 +13,10 @@ public interface ReaderDao {
   Optional<Reader> findById(long id);
 
   List<Reader> findAll();
+
   Optional<Reader> findReaderByBookId(long bookId);
+
   Map<Reader, List<Book>> findAllWithBooks();
+
+  void deleteById(long readerId);
 }

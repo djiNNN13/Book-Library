@@ -1,11 +1,15 @@
 package ui;
 
+import dao.BookDao;
+import dao.BookDaoImpl;
+import dao.ReaderDaoImpl;
 import entity.Book;
 import entity.Reader;
 import exception.DBConfigurationError;
 import exception.DaoOperationException;
 import exception.LibraryServiceException;
 import service.LibraryService;
+import service.Validator;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +23,7 @@ public class Menu {
   private static final String SEPARATOR =
       "-------------------------------------------------------------------";
   private final Scanner scanner = new Scanner(System.in);
-  private final LibraryService libraryService = new LibraryService();
+  private final LibraryService libraryService = new LibraryService(new Validator(), new BookDaoImpl(), new ReaderDaoImpl());
 
   public void displayMenu() {
     System.out.println(SEPARATOR);
