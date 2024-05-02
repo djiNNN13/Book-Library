@@ -3,56 +3,45 @@ package dao;
 import entity.Book;
 import entity.Reader;
 import integration.IntegrationTestBase;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookDaoIT extends IntegrationTestBase {
   private BookDao bookDao;
   private ReaderDao readerDao;
 
-  @BeforeEach
+  @BeforeAll
   void init() {
     bookDao = new BookDaoImpl();
     readerDao = new ReaderDaoImpl();
   }
 
   @Test
-  void save() {
-    var bookToSave = getBook("Test1", "Test1");
+  void saveAndFindById() {
+    var bookToSave = generateBook("Test1", "Test1");
 
     var savedBook = bookDao.save(bookToSave);
-
-    assertAll(
-        () -> assertThat(savedBook.getId()).isNotNull(),
-        () -> assertThat(savedBook.getName()).isEqualTo(bookToSave.getName()),
-        () -> assertThat(savedBook.getAuthor()).isEqualTo(bookToSave.getAuthor()));
-  }
-
-  @Test
-  void findById() {
-    var book = bookDao.save(getBook("Test1", "Test1"));
-
-    Optional<Book> actualBook = bookDao.findById(book.getId());
+    Optional<Book> actualBook = bookDao.findById(savedBook.getId());
 
     assertThat(actualBook).isPresent();
-    assertThat(actualBook.get()).isEqualTo(book);
+    assertAll(
+        () -> assertThat(savedBook.getId()).isNotNull(),
+        () -> assertThat(actualBook.get().getName()).isEqualTo(bookToSave.getName()),
+        () -> assertThat(actualBook.get().getAuthor()).isEqualTo(bookToSave.getAuthor()));
   }
 
   @Test
   void findAll() {
-    var book1 = bookDao.save(getBook("Test1", "Test1"));
-    var book2 = bookDao.save(getBook("Test2", "Test2"));
-    var book3 = bookDao.save(getBook("Test3", "Test3"));
+    var book1 = bookDao.save(generateBook("Test1", "Test1"));
+    var book2 = bookDao.save(generateBook("Test2", "Test2"));
+    var book3 = bookDao.save(generateBook("Test3", "Test3"));
 
     List<Book> actualBooks = bookDao.findAll();
     List<Long> bookIds = actualBooks.stream().map(Book::getId).toList();
@@ -63,49 +52,77 @@ class BookDaoIT extends IntegrationTestBase {
 
   @Test
   void findAllByReaderId() {
-    var book1 = bookDao.save(getBook("Test1", "Test1"));
-    var book2 = bookDao.save(getBook("Test2", "Test2"));
-    var reader = readerDao.save(getReader("Test1"));
-    bookDao.borrow(book1.getId(), reader.getId());
-    bookDao.borrow(book2.getId(), reader.getId());
-    List<Book> expectedBooks = List.of(book1, book2);
+    var book1 = bookDao.save(generateBook("Test1", "Test1"));
+    var book2 = bookDao.save(generateBook("Test2", "Test2"));
+    var book3 = bookDao.save(generateBook("Test3", "Test3"));
+    var book4 = bookDao.save(generateBook("Test4", "Test4"));
 
-    List<Book> actualBooks = bookDao.findAllByReaderId(reader.getId());
+    var reader1 = readerDao.save(generateReader("Test1"));
+    var reader2 = readerDao.save(generateReader("Test2"));
 
-    assertAll(
-        () -> assertThat(actualBooks).hasSize(2),
-        () -> assertThat(actualBooks).isEqualTo(expectedBooks),
-        () -> assertThat(actualBooks.get(0).getReaderId()).isEqualTo(reader.getId()),
-        () -> assertThat(actualBooks.get(1).getReaderId()).isEqualTo(reader.getId()));
+    bookDao.borrow(book1.getId(), reader1.getId());
+    bookDao.borrow(book2.getId(), reader1.getId());
+    bookDao.borrow(book3.getId(), reader2.getId());
+
+    Optional<Book> actualBook1 = bookDao.findById(book1.getId());
+    Optional<Book> actualBook2 = bookDao.findById(book2.getId());
+    List<Book> expectedBooks = List.of(actualBook1.get(), actualBook2.get());
+
+    List<Book> actualBooks = bookDao.findAllByReaderId(reader1.getId());
+
+    assertThat(actualBooks).isNotNull();
+    assertThat(actualBooks).hasSameSizeAs(expectedBooks);
+    assertThat(actualBooks).containsAll(expectedBooks);
   }
 
   @Test
   void findAllWithReaders() {
-    var book1 = bookDao.save(getBook("Test1", "Test1"));
-    var book2 = bookDao.save(getBook("Test2", "Test2"));
-    var reader1 = readerDao.save(getReader("Test1"));
-    var reader2 = readerDao.save(getReader("Test2"));
+    var book1 = bookDao.save(generateBook("Test1", "Test1"));
+    var book2 = bookDao.save(generateBook("Test2", "Test2"));
+    var book3 = bookDao.save(generateBook("Test3", "Test3"));
+
+    var reader1 = readerDao.save(generateReader("Test1"));
+    var reader2 = readerDao.save(generateReader("Test2"));
+
     bookDao.borrow(book1.getId(), reader1.getId());
     bookDao.borrow(book2.getId(), reader2.getId());
+
+    Optional<Book> borrowedBook1 = bookDao.findById(book1.getId());
+    Optional<Book> borrowedBook2 = bookDao.findById(book2.getId());
+    Optional<Book> emptyBook = bookDao.findById(book3.getId());
     Map<Book, Optional<Reader>> expectedMap =
         Map.of(
-            book1, Optional.of(reader1),
-            book2, Optional.of(reader2));
-
+            borrowedBook1.get(), Optional.of(reader1),
+            borrowedBook2.get(), Optional.of(reader2),
+            emptyBook.get(), Optional.empty());
     Map<Book, Optional<Reader>> actualMap = bookDao.findAllWithReaders();
 
     assertAll(
-        () -> assertThat(actualMap).isEqualTo(expectedMap),
-        () -> assertThat(actualMap).containsEntry(book1, Optional.of(reader1)),
-        () -> assertThat(actualMap).containsEntry(book2, Optional.of(reader2)));
+        () -> assertThat(actualMap).hasSameSizeAs(expectedMap),
+        () -> assertThat(actualMap).containsEntry(borrowedBook1.get(), Optional.of(reader1)),
+        () -> assertThat(actualMap).containsEntry(borrowedBook2.get(), Optional.of(reader2)),
+        () -> assertThat(actualMap).containsKey(emptyBook.get()),
+        () -> assertThat(actualMap.get(emptyBook.get())).isEmpty());
   }
 
-  private static Book getBook(String name, String author) {
+  @Test
+  void returnBook() {
+    var book = bookDao.save(generateBook("Test1", "Test1"));
+    var reader = readerDao.save(generateReader("Test1"));
+    bookDao.borrow(book.getId(), reader.getId());
+
+    bookDao.returnBook(book.getId());
+    Optional<Book> returnedBook = bookDao.findById(book.getId());
+
+    assertThat(returnedBook.get().getReaderId()).isEqualTo(0);
+  }
+
+  private static Book generateBook(String name, String author) {
     var book = new Book(name, author);
     return book;
   }
 
-  private static Reader getReader(String name) {
+  private static Reader generateReader(String name) {
     var reader = new Reader(name);
     return reader;
   }

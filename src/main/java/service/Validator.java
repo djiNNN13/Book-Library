@@ -6,7 +6,7 @@ public class Validator {
   public void validateNewBookInputFormat(String book) {
     if (!book.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")) {
       throw new LibraryServiceException(
-          "Invalid input format. Please use letters and exactly one '/' character.");
+          "Invalid input format. Please use letters and exactly one '/' character");
     }
   }
 
@@ -31,7 +31,7 @@ public class Validator {
   public void validateIdToBorrowBook(String inputId) {
     if (!inputId.matches("^\\s*[^/]+\\s*/\\s*[^/]+\\s*$")) {
       throw new LibraryServiceException(
-          "Invalid input format. Please use INTEGERS and exactly one '/' character.");
+          "Invalid input format. Please use INTEGERS and exactly one '/' character");
     }
 
     String[] ids = inputId.split("/");

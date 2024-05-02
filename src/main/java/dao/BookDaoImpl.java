@@ -143,16 +143,4 @@ public class BookDaoImpl implements BookDao {
       throw new DaoOperationException("Error finding books with their readers!");
     }
   }
-
-  @Override
-  public void deleteById(long bookId) {
-    var query = "DELETE FROM book WHERE id = ?";
-    try (var connection = DBUtil.getConnection();
-        var deleteByIdStatement = connection.prepareStatement(query)) {
-      deleteByIdStatement.setLong(1, bookId);
-      deleteByIdStatement.executeUpdate();
-    } catch (SQLException ex) {
-      throw new DaoOperationException("Error deleting book from database!");
-    }
-  }
 }

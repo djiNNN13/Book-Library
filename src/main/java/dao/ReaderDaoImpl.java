@@ -119,16 +119,4 @@ public class ReaderDaoImpl implements ReaderDao {
       throw new DaoOperationException("Error finding readers with borrowed books list!");
     }
   }
-
-  @Override
-  public void deleteById(long readerId) {
-    var query = "DELETE FROM reader WHERE id = ?";
-    try (var connection = DBUtil.getConnection();
-        var deleteByIdStatement = connection.prepareStatement(query)) {
-      deleteByIdStatement.setLong(1, readerId);
-      deleteByIdStatement.executeUpdate();
-    } catch (SQLException ex) {
-      throw new DaoOperationException("Error deleting reader from database!");
-    }
-  }
 }

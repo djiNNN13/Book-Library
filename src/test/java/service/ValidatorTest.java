@@ -31,7 +31,7 @@ class ValidatorTest {
         assertThrows(
             LibraryServiceException.class, () -> validator.validateNewBookInputFormat(book));
     assertThat(exception.getMessage())
-        .isEqualTo("Invalid input format. Please use letters and exactly one '/' character.");
+        .isEqualTo("Invalid input format. Please use letters and exactly one '/' character");
   }
 
   @Test
@@ -84,24 +84,16 @@ class ValidatorTest {
     assertDoesNotThrow(() -> validator.validateIdToBorrowBook("1/1"));
   }
 
-  @Test
-  void shouldThrowExceptionIfBorrowBookIdIsNotValid() {
-    assertAll(
-        () -> {
-          var exception =
-              assertThrows(
-                  LibraryServiceException.class, () -> validator.validateIdToBorrowBook("1 1"));
-          assertThat(exception.getMessage())
-              .isEqualTo(
-                  "Invalid input format. Please use INTEGERS and exactly one '/' character.");
-        },
-        () -> {
-          var exception =
-              assertThrows(
-                  LibraryServiceException.class, () -> validator.validateIdToBorrowBook("-1/-1"));
-          assertThat(exception.getMessage())
-              .isEqualTo("Book ID and Reader ID must be POSITIVE INT values");
-        });
+  @ParameterizedTest
+  @CsvSource({
+    "1 1, Invalid input format. Please use INTEGERS and exactly one '/' character",
+    "-1/-1, Book ID and Reader ID must be POSITIVE INT values"
+  })
+  void shouldThrowExceptionIfBorrowBookIdIsNotValid(String borrowIds, String exceptionMessage) {
+    var exception =
+        assertThrows(
+            LibraryServiceException.class, () -> validator.validateIdToBorrowBook(borrowIds));
+    assertThat(exception.getMessage()).isEqualTo(exceptionMessage);
   }
 
   @Test

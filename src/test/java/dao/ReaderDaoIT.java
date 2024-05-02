@@ -3,54 +3,45 @@ package dao;
 import entity.Book;
 import entity.Reader;
 import integration.IntegrationTestBase;
-import org.assertj.core.api.Assert;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ReaderDaoIT extends IntegrationTestBase {
   private ReaderDao readerDao;
   private BookDao bookDao;
 
-  @BeforeEach
+  @BeforeAll
   void init() {
     readerDao = new ReaderDaoImpl();
     bookDao = new BookDaoImpl();
   }
 
   @Test
-  void save() {
-    var readerToSave = getReader("Test1");
+  void saveAndFindById() {
+    var readerToSave = generateReader("Test1");
 
     var savedReader = readerDao.save(readerToSave);
-
-    assertAll(
-        () -> assertThat(savedReader.getId()).isNotNull(),
-        () -> assertThat(savedReader.getName()).isEqualTo(readerToSave.getName()));
-  }
-
-  @Test
-  void findById() {
-    var reader = readerDao.save(getReader("Test1"));
-
-    Optional<Reader> actualReader = readerDao.findById(reader.getId());
+    Optional<Reader> actualReader = readerDao.findById(savedReader.getId());
 
     assertThat(actualReader).isPresent();
-    assertThat(actualReader.get()).isEqualTo(reader);
+    assertAll(
+        () -> assertThat(savedReader.getId()).isNotNull(),
+        () -> assertThat(actualReader.get().getName()).isEqualTo(readerToSave.getName()));
   }
 
   @Test
   void findAll() {
-    var reader1 = readerDao.save(getReader("Test1"));
-    var reader2 = readerDao.save(getReader("Test2"));
-    var reader3 = readerDao.save(getReader("Test3"));
+    var reader1 = readerDao.save(generateReader("Test1"));
+    var reader2 = readerDao.save(generateReader("Test2"));
+    var reader3 = readerDao.save(generateReader("Test3"));
 
     List<Reader> actualReaders = readerDao.findAll();
     List<Long> readerIds = actualReaders.stream().map(Reader::getId).toList();
@@ -61,31 +52,55 @@ class ReaderDaoIT extends IntegrationTestBase {
 
   @Test
   void findAllWithBooks() {
-    var book1 = bookDao.save(getBook("Test1", "Test1"));
-    var book2 = bookDao.save(getBook("Test2", "Test2"));
-    var reader1 = readerDao.save(getReader("Test1"));
-    var reader2 = readerDao.save(getReader("Test2"));
+    var book1 = bookDao.save(generateBook("Test1", "Test1"));
+    var book2 = bookDao.save(generateBook("Test2", "Test2"));
+    var book3 = bookDao.save(generateBook("Test3", "Test3"));
+
+    var reader1 = readerDao.save(generateReader("Test1"));
+    var reader2 = readerDao.save(generateReader("Test2"));
+    var reader3 = readerDao.save(generateReader("Test3"));
+
     bookDao.borrow(book1.getId(), reader1.getId());
-    bookDao.borrow(book2.getId(), reader2.getId());
-    Map<Reader, List<Book>> expectedMap =
-        Map.of(
-            reader1, List.of(book1),
-            reader2, List.of(book2));
+    bookDao.borrow(book2.getId(), reader1.getId());
+    bookDao.borrow(book3.getId(), reader2.getId());
+
+    Optional<Book> borrowedBook1 = bookDao.findById(book1.getId());
+    Optional<Book> borrowedBook2 = bookDao.findById(book2.getId());
+    Optional<Book> borrowedBook3 = bookDao.findById(book3.getId());
+
+    Map<Reader, List<Book>> expectedMap = new HashMap<>();
+    expectedMap.put(reader1, List.of(borrowedBook1.get(), borrowedBook2.get()));
+    expectedMap.put(reader2, List.of(borrowedBook3.get()));
+    expectedMap.put(reader3, Collections.emptyList());
 
     Map<Reader, List<Book>> actualMap = readerDao.findAllWithBooks();
 
-    assertAll(
-        () -> assertThat(actualMap).isEqualTo(expectedMap),
-        () -> assertThat(actualMap).containsEntry(reader1, List.of(book1)),
-        () -> assertThat(actualMap).containsEntry(reader2, List.of(book2)));
+    assertThat(actualMap)
+        .hasSameSizeAs(expectedMap)
+        .allSatisfy(
+            (reader, books) ->
+                assertThat(books).containsExactlyInAnyOrderElementsOf(expectedMap.get(reader)));
   }
 
-  private static Book getBook(String name, String author) {
+  @Test
+  void findReaderByBookId() {
+    var book = bookDao.save(generateBook("Test1", "Test1"));
+    var reader = readerDao.save(generateReader("Test2"));
+    bookDao.borrow(book.getId(), reader.getId());
+    Optional<Reader> expectedReader = readerDao.findById(reader.getId());
+
+    Optional<Reader> actualReader = readerDao.findReaderByBookId(book.getId());
+
+    assertThat(actualReader).isPresent();
+    assertThat(actualReader.get()).isEqualTo(expectedReader.get());
+  }
+
+  private static Book generateBook(String name, String author) {
     var book = new Book(name, author);
     return book;
   }
 
-  private static Reader getReader(String name) {
+  private static Reader generateReader(String name) {
     var reader = new Reader(name);
     return reader;
   }

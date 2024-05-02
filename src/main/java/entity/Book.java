@@ -71,12 +71,15 @@ public class Book {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Book book = (Book) o;
-    return id == book.id;
+    return Objects.equals(id, book.id)
+        && readerId == book.readerId
+        && Objects.equals(name, book.name)
+        && Objects.equals(author, book.author);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(id, name, author, readerId);
   }
 
   @Override

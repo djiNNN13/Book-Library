@@ -17,6 +17,4 @@ public interface ReaderDao {
   Optional<Reader> findReaderByBookId(long bookId);
 
   Map<Reader, List<Book>> findAllWithBooks();
-
-  void deleteById(long readerId);
 }

@@ -9,11 +9,8 @@ import dao.BookDao;
 import dao.ReaderDao;
 import entity.Book;
 import entity.Reader;
-
-import java.util.*;
-
 import exception.LibraryServiceException;
-import org.junit.jupiter.api.Assertions;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;

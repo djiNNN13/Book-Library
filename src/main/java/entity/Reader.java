@@ -38,7 +38,7 @@ public class Reader {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Reader reader = (Reader) o;
-    return id == reader.id;
+    return id == reader.id && Objects.equals(name, reader.name);
   }
 
   @Override
