@@ -1,23 +1,17 @@
 package service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import exception.LibraryServiceException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidatorTest {
-  private Validator validator;
-
-  @BeforeAll
-  void init() {
-    validator = new Validator();
-  }
+  private final Validator validator = new Validator();
 
   @Test
   void validateNewBookInputFormatIfBookIsValid() {

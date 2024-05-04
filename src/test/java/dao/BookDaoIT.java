@@ -12,16 +12,9 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BookDaoIT extends IntegrationTestBase {
-  private BookDao bookDao;
-  private ReaderDao readerDao;
-
-  @BeforeAll
-  void init() {
-    bookDao = new BookDaoImpl();
-    readerDao = new ReaderDaoImpl();
-  }
+  private final BookDao bookDao = new BookDaoImpl();
+  private final ReaderDao readerDao = new ReaderDaoImpl();
 
   @Test
   void saveAndFindById() {
@@ -110,6 +103,9 @@ class BookDaoIT extends IntegrationTestBase {
     var book = bookDao.save(generateBook("Test1", "Test1"));
     var reader = readerDao.save(generateReader("Test1"));
     bookDao.borrow(book.getId(), reader.getId());
+
+    Optional<Book> actualBook = bookDao.findById(book.getId());
+    assertThat(actualBook.get().getReaderId()).isEqualTo(reader.getId());
 
     bookDao.returnBook(book.getId());
     Optional<Book> returnedBook = bookDao.findById(book.getId());

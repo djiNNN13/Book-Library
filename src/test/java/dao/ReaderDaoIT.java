@@ -13,16 +13,9 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ReaderDaoIT extends IntegrationTestBase {
-  private ReaderDao readerDao;
-  private BookDao bookDao;
-
-  @BeforeAll
-  void init() {
-    readerDao = new ReaderDaoImpl();
-    bookDao = new BookDaoImpl();
-  }
+  private ReaderDao readerDao = new ReaderDaoImpl();
+  private BookDao bookDao = new BookDaoImpl();
 
   @Test
   void saveAndFindById() {
