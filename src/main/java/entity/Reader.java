@@ -5,11 +5,20 @@ import java.util.Objects;
 public class Reader {
   private long id;
   private String name;
-  public Reader(String name){
+
+  public Reader(String name) {
     this.name = name;
   }
-  public Reader(){
 
+  public Reader(long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
+  public Reader() {}
+
+  public long getId() {
+    return id;
   }
 
   public String getName() {
@@ -29,7 +38,7 @@ public class Reader {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Reader reader = (Reader) o;
-    return id == reader.id;
+    return id == reader.id && Objects.equals(name, reader.name);
   }
 
   @Override

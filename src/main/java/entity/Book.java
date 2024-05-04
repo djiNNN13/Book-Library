@@ -3,7 +3,7 @@ package entity;
 import java.util.Objects;
 
 public class Book {
-  private long id;
+  private Long id;
   private String name;
   private String author;
   private long readerId;
@@ -11,6 +11,25 @@ public class Book {
   public Book(String name, String author) {
     this.name = name;
     this.author = author;
+  }
+
+  public Book(long id, String name, String author) {
+    this.id = id;
+    this.name = name;
+    this.author = author;
+  }
+
+  public Book(Long id, String name, String author, long readerId) {
+    this.id = id;
+    this.name = name;
+    this.author = author;
+    this.readerId = readerId;
+  }
+
+  public Book(String name, String author, long readerId) {
+    this.name = name;
+    this.author = author;
+    this.readerId = readerId;
   }
 
   public Book() {}
@@ -31,6 +50,10 @@ public class Book {
     this.author = author;
   }
 
+  public Long getId() {
+    return id;
+  }
+
   public String getName() {
     return name;
   }
@@ -39,17 +62,24 @@ public class Book {
     return author;
   }
 
+  public long getReaderId() {
+    return readerId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Book book = (Book) o;
-    return id == book.id;
+    return Objects.equals(id, book.id)
+        && readerId == book.readerId
+        && Objects.equals(name, book.name)
+        && Objects.equals(author, book.author);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(id, name, author, readerId);
   }
 
   @Override

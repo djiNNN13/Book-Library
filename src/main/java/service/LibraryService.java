@@ -15,9 +15,15 @@ import java.util.Optional;
 public class LibraryService {
   private static final String BOOK_NOT_FOUND = "This Book ID doesn't exist!";
   private static final String READER_NOT_FOUND = "This Reader ID doesn't exist!";
-  private final Validator validator = new Validator();
-  private final BookDao bookDao = new BookDaoImpl();
-  private final ReaderDao readerDao = new ReaderDaoImpl();
+  private Validator validator;
+  private BookDao bookDao;
+  private ReaderDao readerDao;
+
+  public LibraryService(Validator validator, BookDao bookDao, ReaderDao readerDao) {
+    this.validator = new Validator();
+    this.bookDao = new BookDaoImpl();
+    this.readerDao = new ReaderDaoImpl();
+  }
 
   public List<Book> findAllBooks() {
     return bookDao.findAll();
