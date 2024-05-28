@@ -1,4 +1,4 @@
-package exception;
+package com.example.booklibrary.exception;
 
 public class DaoOperationException extends RuntimeException{
     public DaoOperationException(String message) {

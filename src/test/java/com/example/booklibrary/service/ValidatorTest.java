@@ -1,9 +1,9 @@
-package service;
+package com.example.booklibrary.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import exception.LibraryServiceException;
+import com.example.booklibrary.exception.LibraryServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;

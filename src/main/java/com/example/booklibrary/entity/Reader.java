@@ -1,4 +1,4 @@
-package entity;
+package com.example.booklibrary.entity;
 
 import java.util.Objects;
 

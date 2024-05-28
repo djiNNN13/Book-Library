@@ -1,8 +1,8 @@
-package dao;
+package com.example.booklibrary.dao;
 
-import entity.Book;
-import entity.Reader;
-import exception.DaoOperationException;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.DaoOperationException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -26,7 +26,7 @@ public class ReaderDaoImpl implements ReaderDao {
       throw new DaoOperationException(String.format("Error saving reader: %s", readerToSave), e);
     } catch (NullPointerException e) {
       throw new DaoOperationException(
-          "Null pointer exception occurred while attempting to save the reader. "
+          "Null pointer com.example.booklibrary.exception occurred while attempting to save the reader. "
               + "Please ensure that the reader object is not null.");
     }
   }

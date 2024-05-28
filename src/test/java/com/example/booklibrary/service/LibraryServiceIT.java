@@ -1,14 +1,13 @@
-package service;
+package com.example.booklibrary.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
-import dao.BookDao;
-import dao.BookDaoImpl;
-import dao.ReaderDao;
-import dao.ReaderDaoImpl;
-import entity.Book;
-import entity.Reader;
+import com.example.booklibrary.dao.BookDao;
+import com.example.booklibrary.dao.BookDaoImpl;
+import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.dao.ReaderDaoImpl;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
 import integration.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
 

@@ -1,15 +1,14 @@
-package ui;
+package com.example.booklibrary.ui;
 
-import dao.BookDao;
-import dao.BookDaoImpl;
-import dao.ReaderDaoImpl;
-import entity.Book;
-import entity.Reader;
-import exception.DBConfigurationError;
-import exception.DaoOperationException;
-import exception.LibraryServiceException;
-import service.LibraryService;
-import service.Validator;
+import com.example.booklibrary.dao.BookDaoImpl;
+import com.example.booklibrary.dao.ReaderDaoImpl;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.DBConfigurationError;
+import com.example.booklibrary.exception.DaoOperationException;
+import com.example.booklibrary.exception.LibraryServiceException;
+import com.example.booklibrary.service.LibraryService;
+import com.example.booklibrary.service.Validator;
 
 import java.util.List;
 import java.util.Optional;

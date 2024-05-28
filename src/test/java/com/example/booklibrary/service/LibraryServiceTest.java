@@ -1,15 +1,14 @@
-package service;
+package com.example.booklibrary.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import dao.BookDao;
-import dao.ReaderDao;
-import entity.Book;
-import entity.Reader;
-import exception.LibraryServiceException;
+import com.example.booklibrary.dao.BookDao;
+import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.LibraryServiceException;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

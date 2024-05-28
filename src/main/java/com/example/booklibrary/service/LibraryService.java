@@ -1,12 +1,12 @@
-package service;
+package com.example.booklibrary.service;
 
-import dao.BookDao;
-import dao.BookDaoImpl;
-import dao.ReaderDao;
-import dao.ReaderDaoImpl;
-import entity.Book;
-import entity.Reader;
-import exception.LibraryServiceException;
+import com.example.booklibrary.dao.BookDao;
+import com.example.booklibrary.dao.BookDaoImpl;
+import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.dao.ReaderDaoImpl;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.LibraryServiceException;
 
 import java.util.List;
 import java.util.Map;
