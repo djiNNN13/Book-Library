@@ -5,9 +5,9 @@ spring:
   # Database
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/librarydb
+    url: jdbc:postgresql://localhost:5432/book-library-yev
     username: postgres
-    password: 123
+    password: postgres
 # Server configuration
 server:
   port: 8080

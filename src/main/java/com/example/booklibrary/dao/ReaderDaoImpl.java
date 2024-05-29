@@ -26,7 +26,7 @@ public class ReaderDaoImpl implements ReaderDao {
       throw new DaoOperationException(String.format("Error saving reader: %s", readerToSave), e);
     } catch (NullPointerException e) {
       throw new DaoOperationException(
-          "Null pointer com.example.booklibrary.exception occurred while attempting to save the reader. "
+          "Null pointer exception occurred while attempting to save the reader. "
               + "Please ensure that the reader object is not null.");
     }
   }

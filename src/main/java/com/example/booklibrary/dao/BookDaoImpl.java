@@ -27,7 +27,7 @@ public class BookDaoImpl implements BookDao {
       throw new DaoOperationException(String.format("Error saving book: %s", bookToSave), e);
     } catch (NullPointerException e) {
       throw new DaoOperationException(
-          "Null pointer com.example.booklibrary.exception occurred while attempting to save the book. "
+          "Null pointer exception occurred while attempting to save the book. "
               + "Please ensure that the book object is not null.");
     }
   }
