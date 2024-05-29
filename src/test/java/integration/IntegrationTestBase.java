@@ -1,6 +1,6 @@
 package integration;
 
-import dao.DBUtil;
+import com.example.booklibrary.dao.DBUtil;
 import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeEach;
 

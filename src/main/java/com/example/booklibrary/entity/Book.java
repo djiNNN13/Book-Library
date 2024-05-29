@@ -1,7 +1,6 @@
-package entity;
+package com.example.booklibrary.entity;
 
 import java.util.Objects;
-
 public class Book {
   private Long id;
   private String name;

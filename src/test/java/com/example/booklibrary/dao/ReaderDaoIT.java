@@ -1,12 +1,9 @@
-package dao;
+package com.example.booklibrary.dao;
 
-import entity.Book;
-import entity.Reader;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
 import integration.IntegrationTestBase;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import java.util.*;
 

@@ -1,6 +1,6 @@
-package dao;
+package com.example.booklibrary.dao;
 
-import exception.DBConfigurationError;
+import com.example.booklibrary.exception.DBConfigurationError;
 
 import java.io.FileInputStream;
 import java.io.IOException;

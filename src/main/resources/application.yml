@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: Book-Library
+
+  # Database
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/book-library-yev
+    username: postgres
+    password: postgres
+# Server configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /book-library

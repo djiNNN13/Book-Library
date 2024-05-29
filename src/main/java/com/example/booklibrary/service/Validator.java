@@ -1,6 +1,6 @@
-package service;
+package com.example.booklibrary.service;
 
-import exception.LibraryServiceException;
+import com.example.booklibrary.exception.LibraryServiceException;
 
 public class Validator {
   public void validateNewBookInputFormat(String book) {

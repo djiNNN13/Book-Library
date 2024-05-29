@@ -1,8 +1,8 @@
-package dao;
+package com.example.booklibrary.dao;
 
-import entity.Book;
-import entity.Reader;
-import exception.DaoOperationException;
+import com.example.booklibrary.entity.Book;
+import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.DaoOperationException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
