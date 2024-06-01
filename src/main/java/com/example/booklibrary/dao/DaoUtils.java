@@ -42,13 +42,4 @@ public class DaoUtils {
     }
     return readers;
   }
-
-  public static List<Book> mapResultSetToBooksList(ResultSet resultSet) throws SQLException {
-    List<Book> books = new ArrayList<>();
-    while (resultSet.next()) {
-      var book = mapResultSetToBook(resultSet);
-      books.add(book);
-    }
-    return books;
-  }
 }

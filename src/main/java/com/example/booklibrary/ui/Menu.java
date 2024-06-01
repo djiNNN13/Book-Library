@@ -9,6 +9,7 @@ import com.example.booklibrary.exception.DaoOperationException;
 import com.example.booklibrary.exception.LibraryServiceException;
 import com.example.booklibrary.service.LibraryService;
 import com.example.booklibrary.service.Validator;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,8 @@ public class Menu {
   private static final String SEPARATOR =
       "-------------------------------------------------------------------";
   private final Scanner scanner = new Scanner(System.in);
-  private final LibraryService libraryService = new LibraryService(new Validator(), new BookDaoImpl(), new ReaderDaoImpl());
+  private final LibraryService libraryService =
+      new LibraryService(new Validator(), new BookDaoImpl(), new ReaderDaoImpl());
 
   public void displayMenu() {
     System.out.println(SEPARATOR);

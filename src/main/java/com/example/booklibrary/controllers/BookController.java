@@ -1,33 +1,26 @@
 package com.example.booklibrary.controllers;
 
+import com.example.booklibrary.dao.BookDao;
 import com.example.booklibrary.entity.Book;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class BookController {
-  private final List<Book> books = new ArrayList<>();
-  private final AtomicLong counter = new AtomicLong();
+  private final BookDao bookDao;
 
-  public BookController() {
-    books.add(new Book(counter.incrementAndGet(), "1984", "George Orwell"));
-    books.add(new Book(counter.incrementAndGet(), "Home", "Tony Morrison"));
-    books.add(new Book(counter.incrementAndGet(), "Glue", "Irvine Welsh"));
+  public BookController(BookDao bookDao) {
+    this.bookDao = bookDao;
   }
 
   @GetMapping("/books")
   public List<Book> getBooks() {
-    return books;
+    return bookDao.findAll();
   }
 
   @PostMapping("/books")
   public Book saveBook(@RequestBody Book book) {
-    book.setId(counter.incrementAndGet());
-    books.add(book);
-    return book;
+    return bookDao.save(book);
   }
 }

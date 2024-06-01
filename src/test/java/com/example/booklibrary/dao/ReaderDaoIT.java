@@ -4,6 +4,7 @@ import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import integration.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.*;
 
