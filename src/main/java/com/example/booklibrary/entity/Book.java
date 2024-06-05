@@ -1,10 +1,34 @@
 package com.example.booklibrary.entity;
 
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
+
 import java.util.Objects;
+
 public class Book {
-  private Long id;
+  @Positive private Long id;
+
+  @NotBlank(message = "Book name cannot be null!")
+  @Pattern(
+      regexp = "^[^|/\\\\#%=+*_><]*$",
+      message =
+          "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters")
+  @Length(
+      min = 5,
+      max = 100,
+      message = "Book name must be longer than 5 characters, shorter than 100 characters")
   private String name;
+
+  @NotBlank(message = "Book author cannot be null!")
+  @Pattern(
+      regexp = "^[a-zA-Z\\s'-]+$",
+      message = "Book author must contain only ENGLISH letters, spaces, dashes, apostrophes")
+  @Length(
+      min = 5,
+      max = 30,
+      message = "Book author must be longer than 5 characters, shorter than 30 characters")
   private String author;
+
   private long readerId;
 
   public Book(String name, String author) {

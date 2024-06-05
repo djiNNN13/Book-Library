@@ -6,6 +6,7 @@ import com.example.booklibrary.exception.DaoOperationException;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -59,7 +60,7 @@ public class BookDaoImpl implements BookDao {
         "SELECT id AS bookId, name AS bookName, author AS bookAuthor, reader_id FROM book WHERE id = ?";
     Book book = null;
     try {
-      book = jdbcTemplate.queryForObject(query, new BookMapper(), bookId);
+      book = jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Book.class), bookId);
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding book with bookId: %d", bookId), ex);
@@ -71,7 +72,7 @@ public class BookDaoImpl implements BookDao {
   public List<Book> findAll() {
     var query = "SELECT id AS bookId, name AS bookName, author AS bookAuthor, reader_id FROM book";
     try {
-      return jdbcTemplate.query(query, new BookMapper());
+      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Book.class));
     } catch (DataAccessException ex) {
       throw new DaoOperationException("Error finding all books", ex);
     }
@@ -101,7 +102,7 @@ public class BookDaoImpl implements BookDao {
                   WHERE reader_id = ?
                 """;
     try {
-      return jdbcTemplate.query(query, new BookMapper(), readerId);
+      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Book.class), readerId);
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding all books by reader id: %d", readerId), ex);

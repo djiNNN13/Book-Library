@@ -3,10 +3,12 @@ package com.example.booklibrary.dao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
+import org.springframework.stereotype.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-
+@Repository
 public class ReaderDaoImpl implements ReaderDao {
   @Override
   public Reader save(Reader readerToSave) {
