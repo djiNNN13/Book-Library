@@ -8,6 +8,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/book-library-yev
     username: postgres
     password: postgres
+  # JSON Non-Null
+  jackson:
+    default-property-inclusion: non_null
 # Server configuration
 server:
   port: 8080
