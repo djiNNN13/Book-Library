@@ -65,9 +65,11 @@ public class LibraryService {
 
   public void returnBookToLibrary(Long bookId) {
     bookDao.findById(bookId).orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
-    if (readerDao.findReaderByBookId(bookId).equals(Optional.empty())) {
-      throw new LibraryServiceException("Cannot return Book. Book is already in the Library!");
-    }
+    readerDao
+        .findReaderByBookId(bookId)
+        .orElseThrow(
+            () ->
+                new LibraryServiceException("Cannot return Book. Book is already in the Library!"));
     bookDao.returnBook(bookId);
   }
 

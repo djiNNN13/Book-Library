@@ -29,27 +29,27 @@ public class Book {
       message = "Book author must be longer than 5 characters, shorter than 30 characters")
   private String author;
 
-  private long readerId;
+  private Long readerId;
 
   public Book(String name, String author) {
     this.name = name;
     this.author = author;
   }
 
-  public Book(long id, String name, String author) {
+  public Book(Long id, String name, String author) {
     this.id = id;
     this.name = name;
     this.author = author;
   }
 
-  public Book(Long id, String name, String author, long readerId) {
+  public Book(Long id, String name, String author, Long readerId) {
     this.id = id;
     this.name = name;
     this.author = author;
     this.readerId = readerId;
   }
 
-  public Book(String name, String author, long readerId) {
+  public Book(String name, String author, Long readerId) {
     this.name = name;
     this.author = author;
     this.readerId = readerId;
@@ -57,36 +57,36 @@ public class Book {
 
   public Book() {}
 
-  public void setReaderId(long readerId) {
-    this.readerId = readerId;
-  }
-
-  public void setId(long id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
-  }
-
   public Long getId() {
     return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getName() {
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public String getAuthor() {
     return author;
   }
 
-  public long getReaderId() {
+  public void setAuthor(String author) {
+    this.author = author;
+  }
+
+  public Long getReaderId() {
     return readerId;
+  }
+
+  public void setReaderId(Long readerId) {
+    this.readerId = readerId;
   }
 
   @Override

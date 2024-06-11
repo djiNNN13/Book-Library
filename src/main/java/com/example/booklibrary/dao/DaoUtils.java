@@ -3,13 +3,15 @@ package com.example.booklibrary.dao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class DaoUtils {
+public class DaoUtils implements ResultSetExtractor<Map<Book, Optional<Reader>>> {
+
   public static Reader mapResultSetToReader(ResultSet resultSet) {
     try {
       var reader = new Reader();
@@ -41,5 +43,18 @@ public class DaoUtils {
       readers.add(reader);
     }
     return readers;
+  }
+
+  @Override
+  public Map<Book, Optional<Reader>> extractData(ResultSet rs)
+      throws SQLException, DataAccessException {
+    Map<Book, Optional<Reader>> map = new HashMap<>();
+
+    while (rs.next()) {
+      var book = mapResultSetToBook(rs);
+      var reader = rs.getString("readerName") != null ? mapResultSetToReader(rs) : null;
+      map.put(book, Optional.ofNullable(reader));
+    }
+    return map;
   }
 }
