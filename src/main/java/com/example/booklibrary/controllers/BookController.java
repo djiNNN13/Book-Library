@@ -4,6 +4,7 @@ import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.service.LibraryService;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,12 +17,14 @@ public class BookController {
   }
 
   @GetMapping("/books")
-  public List<Book> getBooks() {
-    return libraryService.findAllBooks();
+  public ResponseEntity<List<Book>> getBooks() {
+    var books = libraryService.findAllBooks();
+    return ResponseEntity.ok(books);
   }
 
   @PostMapping("/books")
-  public Book saveBook(@Valid @RequestBody Book book) {
-    return libraryService.addNewBook(book);
+  public ResponseEntity<Book> saveBook(@Valid @RequestBody Book book) {
+    var savedBook = libraryService.addNewBook(book);
+    return ResponseEntity.ok(savedBook);
   }
 }
