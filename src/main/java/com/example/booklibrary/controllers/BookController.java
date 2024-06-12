@@ -1,33 +1,30 @@
 package com.example.booklibrary.controllers;
 
 import com.example.booklibrary.entity.Book;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
+import com.example.booklibrary.service.LibraryService;
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class BookController {
-  private final List<Book> books = new ArrayList<>();
-  private final AtomicLong counter = new AtomicLong();
+  private final LibraryService libraryService;
 
-  public BookController() {
-    books.add(new Book(counter.incrementAndGet(), "1984", "George Orwell"));
-    books.add(new Book(counter.incrementAndGet(), "Home", "Tony Morrison"));
-    books.add(new Book(counter.incrementAndGet(), "Glue", "Irvine Welsh"));
+  public BookController(LibraryService libraryService) {
+    this.libraryService = libraryService;
   }
 
   @GetMapping("/books")
-  public List<Book> getBooks() {
-    return books;
+  public ResponseEntity<List<Book>> getBooks() {
+    var books = libraryService.findAllBooks();
+    return ResponseEntity.ok(books);
   }
 
   @PostMapping("/books")
-  public Book saveBook(@RequestBody Book book) {
-    book.setId(counter.incrementAndGet());
-    books.add(book);
-    return book;
+  public ResponseEntity<Book> saveBook(@Valid @RequestBody Book book) {
+    var savedBook = libraryService.addNewBook(book);
+    return ResponseEntity.ok(savedBook);
   }
 }

@@ -1,28 +1,25 @@
 package com.example.booklibrary.service;
 
 import com.example.booklibrary.dao.BookDao;
-import com.example.booklibrary.dao.BookDaoImpl;
 import com.example.booklibrary.dao.ReaderDao;
-import com.example.booklibrary.dao.ReaderDaoImpl;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.LibraryServiceException;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LibraryService {
   private static final String BOOK_NOT_FOUND = "This Book ID doesn't exist!";
   private static final String READER_NOT_FOUND = "This Reader ID doesn't exist!";
-  private Validator validator;
-  private BookDao bookDao;
-  private ReaderDao readerDao;
+  private final BookDao bookDao;
+  private final ReaderDao readerDao;
 
-  public LibraryService(Validator validator, BookDao bookDao, ReaderDao readerDao) {
-    this.validator = new Validator();
-    this.bookDao = new BookDaoImpl();
-    this.readerDao = new ReaderDaoImpl();
+  public LibraryService(BookDao bookDao, ReaderDao readerDao) {
+    this.bookDao = bookDao;
+    this.readerDao = readerDao;
   }
 
   public List<Book> findAllBooks() {
@@ -33,48 +30,27 @@ public class LibraryService {
     return readerDao.findAll();
   }
 
-  public Optional<Reader> showCurrentReaderOfBook(String bookIdToCheck) {
-    validator.validateSingleId(bookIdToCheck);
-
-    var bookId = Long.parseLong(bookIdToCheck.trim());
+  public Optional<Reader> showCurrentReaderOfBook(Long bookId) {
     bookDao.findById(bookId).orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
 
     return readerDao.findReaderByBookId(bookId);
   }
 
-  public List<Book> showBorrowedBooks(String readerIdToCheck) {
-    validator.validateSingleId(readerIdToCheck);
-
-    var readerId = Long.parseLong(readerIdToCheck.trim());
+  public List<Book> showBorrowedBooks(Long readerId) {
     readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
 
     return bookDao.findAllByReaderId(readerId);
   }
 
-  public void addNewReader(String readerName) {
-    validator.validateName(readerName);
-    readerDao.save(new Reader(readerName));
+  public Reader addNewReader(Reader reader) {
+    return readerDao.save(reader);
   }
 
-  public void addNewBook(String book) {
-    validator.validateNewBookInputFormat(book);
-
-    String[] bookAndAuthor = book.split("/");
-    var bookTitle = bookAndAuthor[0].trim();
-    var authorName = bookAndAuthor[1].trim();
-
-    validator.validateBookTitle(bookTitle);
-    validator.validateName(authorName);
-    bookDao.save(new Book(bookTitle, authorName));
+  public Book addNewBook(Book book) {
+    return bookDao.save(book);
   }
 
-  public void borrowBook(String bookIdAndReaderId) {
-    validator.validateIdToBorrowBook(bookIdAndReaderId);
-
-    String[] ids = bookIdAndReaderId.split("/");
-    var bookId = Long.parseLong(ids[0].trim());
-    var readerId = Long.parseLong(ids[1].trim());
-
+  public void borrowBook(Long bookId, Long readerId) {
     bookDao.findById(bookId).orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
     readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
     readerDao
@@ -87,14 +63,13 @@ public class LibraryService {
     bookDao.borrow(bookId, readerId);
   }
 
-  public void returnBookToLibrary(String bookIdToReturn) {
-    validator.validateSingleId(bookIdToReturn);
-
-    var bookId = Long.parseLong(bookIdToReturn.trim());
+  public void returnBookToLibrary(Long bookId) {
     bookDao.findById(bookId).orElseThrow(() -> new LibraryServiceException(BOOK_NOT_FOUND));
-    if (readerDao.findReaderByBookId(bookId).equals(Optional.empty())) {
-      throw new LibraryServiceException("Cannot return Book. Book is already in the Library!");
-    }
+    readerDao
+        .findReaderByBookId(bookId)
+        .orElseThrow(
+            () ->
+                new LibraryServiceException("Cannot return Book. Book is already in the Library!"));
     bookDao.returnBook(bookId);
   }
 

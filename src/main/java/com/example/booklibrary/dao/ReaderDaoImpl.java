@@ -3,17 +3,18 @@ package com.example.booklibrary.dao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ReaderDaoImpl implements ReaderDao {
   @Override
   public Reader save(Reader readerToSave) {
     var query = "INSERT INTO reader(name) VALUES(?)";
     try (var connection = DBUtil.getConnection();
-        var updateStatement =
-            connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        var updateStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
       Objects.requireNonNull(readerToSave, "Cannot save null value reader");
       updateStatement.setString(1, readerToSave.getName());
       updateStatement.executeUpdate();

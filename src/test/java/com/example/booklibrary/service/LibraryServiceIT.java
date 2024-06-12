@@ -10,6 +10,7 @@ import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import integration.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 class LibraryServiceIT extends IntegrationTestBase {
   private final Validator validator = new Validator();
