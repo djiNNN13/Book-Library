@@ -14,6 +14,11 @@ public class ErrorResponse {
     this.errors = errors;
   }
 
+  public ErrorResponse(LocalDateTime localDateTime, String errorMessage) {
+    this.localDateTime = localDateTime;
+    this.errorMessage = errorMessage;
+  }
+
   public LocalDateTime getLocalDateTime() {
     return localDateTime;
   }

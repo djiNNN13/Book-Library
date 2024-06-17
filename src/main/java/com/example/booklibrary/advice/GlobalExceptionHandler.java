@@ -1,5 +1,7 @@
 package com.example.booklibrary.advice;
 
+import com.example.booklibrary.exception.BookNotFoundException;
+import com.example.booklibrary.exception.ReaderNotFoundException;
 import com.example.booklibrary.util.ErrorDetail;
 import com.example.booklibrary.util.ErrorResponse;
 
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.yaml.snakeyaml.reader.ReaderException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,6 +26,22 @@ public class GlobalExceptionHandler {
             "Failed to create a new book, the request contains invalid fields",
             errors);
 
+    return ResponseEntity.badRequest().body(errorResponse);
+  }
+  @ExceptionHandler(value = BookNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleBookNotFound(BookNotFoundException ex){
+    var errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            ex.getMessage()
+    );
+    return ResponseEntity.badRequest().body(errorResponse);
+  }
+  @ExceptionHandler(value = ReaderNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleReaderNotFound(ReaderNotFoundException ex){
+    var errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            ex.getMessage()
+    );
     return ResponseEntity.badRequest().body(errorResponse);
   }
 }

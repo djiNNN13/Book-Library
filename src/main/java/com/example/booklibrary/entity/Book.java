@@ -95,7 +95,7 @@ public class Book {
     if (o == null || getClass() != o.getClass()) return false;
     Book book = (Book) o;
     return Objects.equals(id, book.id)
-        && readerId == book.readerId
+        && Objects.equals(readerId, book.readerId)
         && Objects.equals(name, book.name)
         && Objects.equals(author, book.author);
   }

@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import java.util.Objects;
 
 public class Reader {
-  @Positive private long id;
+  @Positive private Long id;
 
   @NotBlank(message = "Book author cannot be null!")
   @Pattern(
@@ -22,14 +22,14 @@ public class Reader {
     this.name = name;
   }
 
-  public Reader(long id, String name) {
+  public Reader(Long id, String name) {
     this.id = id;
     this.name = name;
   }
 
   public Reader() {}
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -37,7 +37,7 @@ public class Reader {
     return name;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -50,7 +50,7 @@ public class Reader {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Reader reader = (Reader) o;
-    return id == reader.id && Objects.equals(name, reader.name);
+    return Objects.equals(id, reader.id) && Objects.equals(name, reader.name);
   }
 
   @Override
