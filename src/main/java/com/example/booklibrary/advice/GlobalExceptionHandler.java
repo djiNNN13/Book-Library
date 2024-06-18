@@ -28,20 +28,10 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity.badRequest().body(errorResponse);
   }
-  @ExceptionHandler(value = BookNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleBookNotFound(BookNotFoundException ex){
-    var errorResponse = new ErrorResponse(
-            LocalDateTime.now(),
-            ex.getMessage()
-    );
-    return ResponseEntity.badRequest().body(errorResponse);
-  }
-  @ExceptionHandler(value = ReaderNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleReaderNotFound(ReaderNotFoundException ex){
-    var errorResponse = new ErrorResponse(
-            LocalDateTime.now(),
-            ex.getMessage()
-    );
+
+  @ExceptionHandler({BookNotFoundException.class, ReaderNotFoundException.class})
+  public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex) {
+    var errorResponse = new ErrorResponse(LocalDateTime.now(), ex.getMessage());
     return ResponseEntity.badRequest().body(errorResponse);
   }
 }

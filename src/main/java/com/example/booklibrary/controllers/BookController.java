@@ -90,7 +90,7 @@ public class BookController {
     if ((bookToReturn.getReaderId() != null)) {
       bookToReturn.setReaderId(null);
     } else {
-      LOGGER.error("Cannot return not borrowed book!");
+      return ResponseEntity.badRequest().body(bookToReturn);
     }
 
     return ResponseEntity.ok(bookToReturn);
@@ -104,14 +104,17 @@ public class BookController {
             .filter(book -> book.getId().equals(bookId))
             .findAny()
             .orElseThrow(() -> new BookNotFoundException("Book not found!"));
+
     if (bookToFind.getReaderId() == null) {
-      LOGGER.error("This book is not borrowed by any reader");
+      return ResponseEntity.badRequest().body(null);
     }
+
     var readerToReturn =
         readers.stream()
             .filter(reader -> reader.getId().equals(bookToFind.getReaderId()))
             .findAny()
             .orElseThrow(() -> new ReaderNotFoundException("Reader not found!"));
+
     return ResponseEntity.ok(readerToReturn);
   }
 

@@ -48,10 +48,7 @@ public class ReaderController {
   @GetMapping("/readers/{readerId}/books")
   public ResponseEntity<List<Book>> getBorrowedBooksByReaderId(
       @PathVariable("readerId") @NotNull @Positive Long readerId) {
-    var borrowedBooks =
-        books.stream()
-            .filter(book -> book.getReaderId() != null && book.getReaderId().equals(readerId))
-            .toList();
+    var borrowedBooks = books.stream().filter(book -> readerId.equals(book.getReaderId())).toList();
     return ResponseEntity.ok(borrowedBooks);
   }
 
