@@ -1,5 +1,6 @@
 package com.example.booklibrary.advice;
 
+import com.example.booklibrary.exception.BookNotBorrowedException;
 import com.example.booklibrary.exception.BookNotFoundException;
 import com.example.booklibrary.exception.ReaderNotFoundException;
 import com.example.booklibrary.util.ErrorDetail;
@@ -29,8 +30,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(errorResponse);
   }
 
-  @ExceptionHandler({BookNotFoundException.class, ReaderNotFoundException.class})
-  public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex) {
+  @ExceptionHandler({
+    BookNotFoundException.class,
+    ReaderNotFoundException.class,
+    BookNotBorrowedException.class
+  })
+  public ResponseEntity<ErrorResponse> handleBadRequestSituations(RuntimeException ex) {
     var errorResponse = new ErrorResponse(LocalDateTime.now(), ex.getMessage());
     return ResponseEntity.badRequest().body(errorResponse);
   }

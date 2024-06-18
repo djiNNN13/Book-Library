@@ -3,6 +3,7 @@ package com.example.booklibrary.controllers;
 import ch.qos.logback.classic.LoggerContext;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.exception.BookNotBorrowedException;
 import com.example.booklibrary.exception.BookNotFoundException;
 import com.example.booklibrary.exception.ReaderNotFoundException;
 import com.example.booklibrary.service.LibraryService;
@@ -90,7 +91,7 @@ public class BookController {
     if ((bookToReturn.getReaderId() != null)) {
       bookToReturn.setReaderId(null);
     } else {
-      return ResponseEntity.badRequest().body(bookToReturn);
+      throw new BookNotBorrowedException("Cannot return not borrowed book!");
     }
 
     return ResponseEntity.ok(bookToReturn);
@@ -106,7 +107,7 @@ public class BookController {
             .orElseThrow(() -> new BookNotFoundException("Book not found!"));
 
     if (bookToFind.getReaderId() == null) {
-      return ResponseEntity.badRequest().body(null);
+      throw new BookNotBorrowedException("This book is not borrowed by any reader");
     }
 
     var readerToReturn =
