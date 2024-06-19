@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface ReaderDao {
   Reader save(Reader readerToSave);
 
-  Optional<Reader> findById(long id);
+  Optional<Reader> findById(Long id);
 
   List<Reader> findAll();
 
-  Optional<Reader> findReaderByBookId(long bookId);
+  Optional<Reader> findReaderByBookId(Long bookId);
 
   Map<Reader, List<Book>> findAllWithBooks();
 }

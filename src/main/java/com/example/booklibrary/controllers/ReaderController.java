@@ -1,68 +1,47 @@
 package com.example.booklibrary.controllers;
 
-import static java.util.stream.Collectors.toMap;
-
+import com.example.booklibrary.dto.ReaderDTO;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
+import com.example.booklibrary.service.LibraryService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ReaderController {
-  private final List<Book> books = new ArrayList<>();
-  private final List<Reader> readers = new ArrayList<>();
-  private final AtomicLong bookCounter = new AtomicLong();
-  private final AtomicLong readerCounter = new AtomicLong();
-  private final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
+  private final LibraryService libraryService;
 
-  public ReaderController() {
-    books.add(new Book(bookCounter.incrementAndGet(), "1984", "George Orwell", 1L));
-    books.add(new Book(bookCounter.incrementAndGet(), "Home", "Tony Morrison", 1L));
-    books.add(new Book(bookCounter.incrementAndGet(), "Glue", "Irvine Welsh"));
-
-    readers.add(new Reader(readerCounter.incrementAndGet(), "Ivan"));
-    readers.add(new Reader(readerCounter.incrementAndGet(), "Yevhenii"));
-    readers.add(new Reader(readerCounter.incrementAndGet(), "Andrii"));
+  public ReaderController(LibraryService libraryService) {
+    this.libraryService = libraryService;
   }
 
   @GetMapping("/readers")
   public ResponseEntity<List<Reader>> getReaders() {
+    var readers = libraryService.findAllReader();
     return ResponseEntity.ok(readers);
   }
 
   @PostMapping("/readers")
-  public ResponseEntity<Reader> saveReader(@RequestBody Reader reader) {
-    readers.add(reader);
-    return ResponseEntity.ok(reader);
+  public ResponseEntity<Reader> saveReader(@Valid @RequestBody Reader reader) {
+    var savedReader = libraryService.addNewReader(reader);
+    return ResponseEntity.ok(savedReader);
   }
 
   @GetMapping("/readers/{readerId}/books")
   public ResponseEntity<List<Book>> getBorrowedBooksByReaderId(
       @PathVariable("readerId") @NotNull @Positive Long readerId) {
-    var borrowedBooks = books.stream().filter(book -> readerId.equals(book.getReaderId())).toList();
-    return ResponseEntity.ok(borrowedBooks);
+    var books = libraryService.showBorrowedBooks(readerId);
+    return ResponseEntity.ok(books);
   }
 
   @GetMapping("/readers/books")
-  public ResponseEntity<Map<Reader, List<Book>>> getReadersWithBorrowedBooks() {
-    Map<Reader, List<Book>> readersWithBooks =
-        readers.stream()
-            .collect(
-                toMap(
-                    reader -> reader,
-                    reader ->
-                        books.stream()
-                            .filter(book -> reader.getId().equals(book.getReaderId()))
-                            .toList()));
+  public ResponseEntity<List<ReaderDTO>> getReadersWithBorrowedBooks() {
+    var readersWithBooks = libraryService.findAllReadersWithBooks();
     return ResponseEntity.ok(readersWithBooks);
   }
 }

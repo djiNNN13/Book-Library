@@ -5,6 +5,7 @@ import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
 import java.util.*;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -64,11 +65,13 @@ public class BookDaoImpl implements BookDao {
     Book book = null;
     try {
       book = jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Book.class), bookId);
+    } catch (EmptyResultDataAccessException ex) {
+      return Optional.empty();
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding book with bookId: %d", bookId), ex);
     }
-    return Optional.ofNullable(book);
+    return Optional.of(book);
   }
 
   @Override
@@ -97,9 +100,9 @@ public class BookDaoImpl implements BookDao {
   public List<Book> findAllByReaderId(long readerId) {
     var query =
         """
-                SELECT id AS bookId,
-                  name AS bookName,
-                  author AS bookAuthor,
+                SELECT id,
+                  name,
+                  author,
                   reader_id
                 FROM book
                   WHERE reader_id = ?
@@ -127,7 +130,7 @@ public class BookDaoImpl implements BookDao {
                   LEFT JOIN reader ON book.reader_id = reader.id
                      """;
     try {
-      return jdbcTemplate.query(query, new DaoUtils());
+      return jdbcTemplate.query(query, DaoUtils.getBookReaderExtractor());
     } catch (DataAccessException ex) {
       throw new DaoOperationException("Error finding books with their readers!");
     }

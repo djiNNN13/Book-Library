@@ -1,8 +1,6 @@
 package com.example.booklibrary.advice;
 
-import com.example.booklibrary.exception.BookNotBorrowedException;
-import com.example.booklibrary.exception.BookNotFoundException;
-import com.example.booklibrary.exception.ReaderNotFoundException;
+import com.example.booklibrary.exception.*;
 import com.example.booklibrary.util.ErrorDetail;
 import com.example.booklibrary.util.ErrorResponse;
 
@@ -33,7 +31,9 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({
     BookNotFoundException.class,
     ReaderNotFoundException.class,
-    BookNotBorrowedException.class
+    BookNotBorrowedException.class,
+    DaoOperationException.class,
+    LibraryServiceException.class
   })
   public ResponseEntity<ErrorResponse> handleBadRequestSituations(RuntimeException ex) {
     var errorResponse = new ErrorResponse(LocalDateTime.now(), ex.getMessage());
