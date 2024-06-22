@@ -2,13 +2,13 @@ package com.example.booklibrary.dto;
 
 import com.example.booklibrary.entity.Reader;
 
-public class BookDTO {
+public class BookWithReaderDto {
   private Long id;
   private String author;
   private String name;
   private Reader reader;
 
-  public BookDTO(Long id, String author, String name, Reader reader) {
+  public BookWithReaderDto(Long id, String author, String name, Reader reader) {
     this.id = id;
     this.author = author;
     this.name = name;

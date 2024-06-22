@@ -2,8 +2,8 @@ package com.example.booklibrary.service;
 
 import com.example.booklibrary.dao.BookDao;
 import com.example.booklibrary.dao.ReaderDao;
-import com.example.booklibrary.dto.BookDTO;
-import com.example.booklibrary.dto.ReaderDTO;
+import com.example.booklibrary.dto.BookWithReaderDto;
+import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.LibraryServiceException;
@@ -76,24 +76,19 @@ public class LibraryService {
     bookDao.returnBook(bookId);
   }
 
-  public List<ReaderDTO> findAllReadersWithBooks() {
+  public List<ReaderWithBooksDto> findAllReadersWithBooks() {
     var readerWithBooks = readerDao.findAllWithBooks();
-    List<ReaderDTO> readerDTOs =
-        readerWithBooks.entrySet().stream()
-            .map(entry -> ReaderMapper.INSTANCE.readerToDto(entry.getKey(), entry.getValue()))
-            .toList();
-    return readerDTOs;
+    return readerWithBooks.entrySet().stream()
+        .map(entry -> ReaderMapper.INSTANCE.readerToDto(entry.getKey(), entry.getValue()))
+        .toList();
   }
 
-  public List<BookDTO> findAllBooksWithReaders() {
+  public List<BookWithReaderDto> findAllBooksWithReaders() {
     var bookWithReader = bookDao.findAllWithReaders();
-    List<BookDTO> bookDTOs =
-        bookWithReader.entrySet().stream()
-            .map(
-                entry ->
-                    BookMapper.INSTANCE.bookToBookDto(
-                        entry.getKey(), entry.getValue().orElse(null)))
-            .toList();
-    return bookDTOs;
+    return bookWithReader.entrySet().stream()
+        .map(
+            entry ->
+                BookMapper.INSTANCE.bookToBookDto(entry.getKey(), entry.getValue().orElse(null)))
+        .toList();
   }
 }

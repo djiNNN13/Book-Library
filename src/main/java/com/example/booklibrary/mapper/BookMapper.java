@@ -1,6 +1,6 @@
 package com.example.booklibrary.mapper;
 
-import com.example.booklibrary.dto.BookDTO;
+import com.example.booklibrary.dto.BookWithReaderDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import org.mapstruct.Mapper;
@@ -16,5 +16,5 @@ public interface BookMapper {
     @Mapping(source = "book.id", target = "id"),
     @Mapping(source = "book.name", target = "name"),
   })
-  BookDTO bookToBookDto(Book book, Reader reader);
+  BookWithReaderDto bookToBookDto(Book book, Reader reader);
 }

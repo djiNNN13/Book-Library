@@ -1,6 +1,6 @@
 package com.example.booklibrary.controllers;
 
-import com.example.booklibrary.dto.BookDTO;
+import com.example.booklibrary.dto.BookWithReaderDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.ReaderNotFoundException;
@@ -34,26 +34,23 @@ public class BookController {
   }
 
   @PostMapping("/books/{bookId}/readers/{readerId}")
-  public ResponseEntity<Object> borrowBookToReader(
+  public ResponseEntity<Void> borrowBookToReader(
       @PathVariable("bookId") @NotNull @Positive Long bookId,
       @PathVariable("readerId") @NotNull @Positive Long readerId) {
     libraryService.borrowBook(bookId, readerId);
-    return ResponseEntity.ok(
-        String.format(
-            "Book with id %d successfully borrowed to reader with id %d", bookId, readerId));
+    return ResponseEntity.ok().build();
   }
 
   @DeleteMapping("/books/{bookId}")
-  public ResponseEntity<Object> returnBook(@PathVariable("bookId") @NotNull @Positive Long bookId) {
+  public ResponseEntity<Void> returnBook(@PathVariable("bookId") @NotNull @Positive Long bookId) {
     libraryService.returnBookToLibrary(bookId);
-    return ResponseEntity.ok(
-        String.format("Book with id %d successfully returned to the library", bookId));
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping("/books/{bookId}/reader")
   public ResponseEntity<Reader> getReaderByBookId(
       @PathVariable("bookId") @NotNull @Positive Long bookId) {
-    var reader =
+    return ResponseEntity.ok(
         libraryService
             .showCurrentReaderOfBook(bookId)
             .orElseThrow(
@@ -61,12 +58,11 @@ public class BookController {
                     new ReaderNotFoundException(
                         String.format(
                             "Cannot find reader by book = %d id! Book has not any reader",
-                            bookId)));
-    return ResponseEntity.ok(reader);
+                            bookId))));
   }
 
   @GetMapping("/books/readers")
-  public ResponseEntity<List<BookDTO>> getBooksWithReaders() {
+  public ResponseEntity<List<BookWithReaderDto>> getBooksWithReaders() {
     var booksWithReaders = libraryService.findAllBooksWithReaders();
     return ResponseEntity.ok(booksWithReaders);
   }

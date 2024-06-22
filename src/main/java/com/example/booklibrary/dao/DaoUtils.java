@@ -3,19 +3,14 @@ package com.example.booklibrary.dao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 public class DaoUtils {
-  private static class BookReaderExtractor
-      implements ResultSetExtractor<Map<Book, Optional<Reader>>> {
-    @Override
-    public Map<Book, Optional<Reader>> extractData(ResultSet rs)
-        throws SQLException, DataAccessException {
+  public static ResultSetExtractor<Map<Book, Optional<Reader>>> getBookReaderExtractor() {
+    return rs -> {
       Map<Book, Optional<Reader>> map = new HashMap<>();
 
       while (rs.next()) {
@@ -24,15 +19,11 @@ public class DaoUtils {
         map.put(book, Optional.ofNullable(reader));
       }
       return map;
-    }
-  }
-  public static ResultSetExtractor<Map<Book, Optional<Reader>>> getBookReaderExtractor(){
-    return new BookReaderExtractor();
+    };
   }
 
-  private static class ReaderBooksExtractor implements ResultSetExtractor<Map<Reader, List<Book>>> {
-    @Override
-    public Map<Reader, List<Book>> extractData(ResultSet rs) throws SQLException {
+  public static ResultSetExtractor<Map<Reader, List<Book>>> getReaderBooksExtractor() {
+    return rs -> {
       Map<Reader, List<Book>> map = new HashMap<>();
 
       while (rs.next()) {
@@ -44,11 +35,7 @@ public class DaoUtils {
         }
       }
       return map;
-    }
-  }
-
-  public static ResultSetExtractor<Map<Reader, List<Book>>> getReaderBooksExtractor() {
-    return new ReaderBooksExtractor();
+    };
   }
 
   private static Reader mapResultSetToReader(ResultSet resultSet) {

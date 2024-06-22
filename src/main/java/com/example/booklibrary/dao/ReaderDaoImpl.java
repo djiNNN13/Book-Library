@@ -49,17 +49,16 @@ public class ReaderDaoImpl implements ReaderDao {
   @Override
   public Optional<Reader> findById(Long readerId) {
     var query = "SELECT id AS readerId, name AS readerName FROM reader WHERE id = ?";
-    Reader reader = null;
     try {
-      reader =
-          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), readerId);
+      //noinspection DataFlowIssue
+      return Optional.of(
+          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), readerId));
     } catch (EmptyResultDataAccessException ex) {
       return Optional.empty();
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding reader with id: %d!", readerId), ex);
     }
-    return Optional.of(reader);
   }
 
   @Override
@@ -82,17 +81,16 @@ public class ReaderDaoImpl implements ReaderDao {
                 FROM reader
                   INNER JOIN book ON reader.id = book.reader_id WHERE book.id = ?
                 """;
-    Reader reader = null;
     try {
-      reader =
-          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), bookId);
+      //noinspection DataFlowIssue
+      return Optional.of(
+          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), bookId));
     } catch (EmptyResultDataAccessException ex) {
       return Optional.empty();
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding reader by book id: %d", bookId), ex);
     }
-    return Optional.of(reader);
   }
 
   @Override

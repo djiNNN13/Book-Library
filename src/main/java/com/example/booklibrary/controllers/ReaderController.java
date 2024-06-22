@@ -1,6 +1,6 @@
 package com.example.booklibrary.controllers;
 
-import com.example.booklibrary.dto.ReaderDTO;
+import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.service.LibraryService;
@@ -40,7 +40,7 @@ public class ReaderController {
   }
 
   @GetMapping("/readers/books")
-  public ResponseEntity<List<ReaderDTO>> getReadersWithBorrowedBooks() {
+  public ResponseEntity<List<ReaderWithBooksDto>> getReadersWithBorrowedBooks() {
     var readersWithBooks = libraryService.findAllReadersWithBooks();
     return ResponseEntity.ok(readersWithBooks);
   }

@@ -62,16 +62,16 @@ public class BookDaoImpl implements BookDao {
   public Optional<Book> findById(long bookId) {
     var query =
         "SELECT id AS bookId, name AS bookName, author AS bookAuthor, reader_id FROM book WHERE id = ?";
-    Book book = null;
     try {
-      book = jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Book.class), bookId);
+      //noinspection DataFlowIssue
+      return Optional.of(
+          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Book.class), bookId));
     } catch (EmptyResultDataAccessException ex) {
       return Optional.empty();
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding book with bookId: %d", bookId), ex);
     }
-    return Optional.of(book);
   }
 
   @Override
