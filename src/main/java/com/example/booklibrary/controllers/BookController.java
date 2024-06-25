@@ -50,15 +50,14 @@ public class BookController {
   @GetMapping("/books/{bookId}/reader")
   public ResponseEntity<Reader> getReaderByBookId(
       @PathVariable("bookId") @NotNull @Positive Long bookId) {
-    return ResponseEntity.ok(
-        libraryService
-            .showCurrentReaderOfBook(bookId)
-            .orElseThrow(
-                () ->
-                    new ReaderNotFoundException(
-                        String.format(
-                            "Cannot find reader by book = %d id! Book has not any reader",
-                            bookId))));
+    return libraryService
+        .showCurrentReaderOfBook(bookId)
+        .map(ResponseEntity::ok)
+        .orElseThrow(
+            () ->
+                new ReaderNotFoundException(
+                    String.format(
+                        "Cannot find reader by book = %d id! Book has not any reader", bookId)));
   }
 
   @GetMapping("/books/readers")
