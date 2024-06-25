@@ -3,27 +3,41 @@ package com.example.booklibrary.dao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class ReaderDaoImpl implements ReaderDao {
+  private JdbcTemplate jdbcTemplate;
+
+  public ReaderDaoImpl(JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
+
   @Override
   public Reader save(Reader readerToSave) {
     var query = "INSERT INTO reader(name) VALUES(?)";
-    try (var connection = DBUtil.getConnection();
-        var updateStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-      Objects.requireNonNull(readerToSave, "Cannot save null value reader");
-      updateStatement.setString(1, readerToSave.getName());
-      updateStatement.executeUpdate();
-      var generatedId = updateStatement.getGeneratedKeys();
-      if (generatedId.next()) {
-        readerToSave.setId(generatedId.getLong(1));
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    try {
+      Objects.requireNonNull(readerToSave);
+      jdbcTemplate.update(
+          con -> {
+            var preparedStatement = con.prepareStatement(query, new String[] {"id"});
+            preparedStatement.setString(1, readerToSave.getName());
+            return preparedStatement;
+          },
+          keyHolder);
+      if (keyHolder.getKey() != null) {
+        readerToSave.setId(keyHolder.getKey().longValue());
       }
       return readerToSave;
-    } catch (SQLException e) {
+    } catch (DataAccessException e) {
       throw new DaoOperationException(String.format("Error saving reader: %s", readerToSave), e);
     } catch (NullPointerException e) {
       throw new DaoOperationException(
@@ -33,59 +47,49 @@ public class ReaderDaoImpl implements ReaderDao {
   }
 
   @Override
-  public Optional<Reader> findById(long readerId) {
+  public Optional<Reader> findById(Long readerId) {
     var query = "SELECT id AS readerId, name AS readerName FROM reader WHERE id = ?";
-    try (var connection = DBUtil.getConnection();
-        var selectByIdStatement = connection.prepareStatement(query)) {
-      selectByIdStatement.setLong(1, readerId);
-      var resultSet = selectByIdStatement.executeQuery();
-      if (resultSet.next()) {
-        var reader = DaoUtils.mapResultSetToReader(resultSet);
-        return Optional.of(reader);
-      } else {
-        return Optional.empty();
-      }
-    } catch (SQLException e) {
+    try {
+      //noinspection DataFlowIssue
+      return Optional.of(
+          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), readerId));
+    } catch (EmptyResultDataAccessException ex) {
+      return Optional.empty();
+    } catch (DataAccessException ex) {
       throw new DaoOperationException(
-          String.format("Error finding reader with id: %d", readerId), e);
+          String.format("Error finding reader with id: %d!", readerId), ex);
     }
   }
 
   @Override
   public List<Reader> findAll() {
-    var query = "SELECT id AS readerId, name AS readerName FROM reader";
-    try (var connection = DBUtil.getConnection();
-        var selectAllStatement = connection.createStatement()) {
-      var resultSet = selectAllStatement.executeQuery(query);
-      return DaoUtils.mapResultSetToReadersList(resultSet);
-    } catch (SQLException e) {
+    var query = "SELECT id, name FROM reader";
+    try {
+      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Reader.class));
+    } catch (DataAccessException e) {
       throw new DaoOperationException("Error finding all readers", e);
     }
   }
 
   @Override
-  public Optional<Reader> findReaderByBookId(long bookId) {
+  public Optional<Reader> findReaderByBookId(Long bookId) {
     var query =
         """
                 SELECT
-                  reader.id AS readerId,
-                  reader.name AS readerName
+                  reader.id,
+                  reader.name
                 FROM reader
                   INNER JOIN book ON reader.id = book.reader_id WHERE book.id = ?
                 """;
-    try (var connection = DBUtil.getConnection();
-        var selectReaderByBookStatement = connection.prepareStatement(query)) {
-      selectReaderByBookStatement.setLong(1, bookId);
-      var resultSet = selectReaderByBookStatement.executeQuery();
-      if (resultSet.next()) {
-        var reader = DaoUtils.mapResultSetToReader(resultSet);
-        return Optional.of(reader);
-      } else {
-        return Optional.empty();
-      }
-    } catch (SQLException e) {
+    try {
+      //noinspection DataFlowIssue
+      return Optional.of(
+          jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Reader.class), bookId));
+    } catch (EmptyResultDataAccessException ex) {
+      return Optional.empty();
+    } catch (DataAccessException ex) {
       throw new DaoOperationException(
-          String.format("Error finding reader by book id: %d", bookId), e);
+          String.format("Error finding reader by book id: %d", bookId), ex);
     }
   }
 
@@ -103,20 +107,9 @@ public class ReaderDaoImpl implements ReaderDao {
                 FROM reader
                   LEFT JOIN book ON reader.id = book.reader_id
                 """;
-    try (var connection = DBUtil.getConnection();
-        var selectAllReadersWithBooksStatement = connection.createStatement()) {
-      var resultSet = selectAllReadersWithBooksStatement.executeQuery(query);
-      Map<Reader, List<Book>> map = new HashMap<>();
-      while (resultSet.next()) {
-        var borrowedBooks =
-            map.computeIfAbsent(DaoUtils.mapResultSetToReader(resultSet), k -> new ArrayList<>());
-        if (resultSet.getString("bookName") != null) {
-          var book = DaoUtils.mapResultSetToBook(resultSet);
-          borrowedBooks.add(book);
-        }
-      }
-      return map;
-    } catch (SQLException e) {
+    try {
+      return jdbcTemplate.query(query, DaoUtils.getReaderBooksExtractor());
+    } catch (DataAccessException e) {
       throw new DaoOperationException("Error finding readers with borrowed books list!");
     }
   }

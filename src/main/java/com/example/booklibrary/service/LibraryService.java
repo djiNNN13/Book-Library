@@ -2,11 +2,14 @@ package com.example.booklibrary.service;
 
 import com.example.booklibrary.dao.BookDao;
 import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.dto.BookWithReaderDto;
+import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.LibraryServiceException;
+import com.example.booklibrary.mapper.BookMapper;
+import com.example.booklibrary.mapper.ReaderMapper;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -73,11 +76,19 @@ public class LibraryService {
     bookDao.returnBook(bookId);
   }
 
-  public Map<Reader, List<Book>> findAllReadersWithBooks() {
-    return readerDao.findAllWithBooks();
+  public List<ReaderWithBooksDto> findAllReadersWithBooks() {
+    var readerWithBooks = readerDao.findAllWithBooks();
+    return readerWithBooks.entrySet().stream()
+        .map(entry -> ReaderMapper.INSTANCE.readerToDto(entry.getKey(), entry.getValue()))
+        .toList();
   }
 
-  public Map<Book, Optional<Reader>> findAllBooksWithReaders() {
-    return bookDao.findAllWithReaders();
+  public List<BookWithReaderDto> findAllBooksWithReaders() {
+    var bookWithReader = bookDao.findAllWithReaders();
+    return bookWithReader.entrySet().stream()
+        .map(
+            entry ->
+                BookMapper.INSTANCE.bookToBookDto(entry.getKey(), entry.getValue().orElse(null)))
+        .toList();
   }
 }
