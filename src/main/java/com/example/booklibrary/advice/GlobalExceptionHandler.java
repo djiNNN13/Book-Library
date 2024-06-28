@@ -6,6 +6,8 @@ import com.example.booklibrary.util.ErrorResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

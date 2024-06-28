@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class BookController {
-  private final LibraryService libraryService;
+  private LibraryService libraryService;
 
   public BookController(LibraryService libraryService) {
     this.libraryService = libraryService;
