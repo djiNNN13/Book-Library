@@ -133,7 +133,7 @@ class LibraryServiceTest {
 
   @Test
   void addNewReader() {
-    Reader reader = new Reader("Yevhenii");
+    var reader = new Reader("Yevhenii");
 
     libraryService.addNewReader(reader);
 
@@ -142,7 +142,7 @@ class LibraryServiceTest {
 
   @Test
   void addNewBook() {
-    Book book = new Book("Martin Eden", "Jack London");
+    var book = new Book("Martin Eden", "Jack London");
 
     libraryService.addNewBook(book);
 
