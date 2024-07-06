@@ -15,8 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -108,88 +110,82 @@ class BookControllerTest {
   private static Stream<Arguments> provideInvalidFields() {
     return Stream.of(
         Arguments.of(
-            "name", "x", "Book name must be longer than 5 characters, shorter than 100 characters"),
-        Arguments.of(
+            (Consumer<Book>) book -> book.setName("x"),
             "name",
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij",
             "Book name must be longer than 5 characters, shorter than 100 characters"),
         Arguments.of(
+            (Consumer<Book>)
+                book ->
+                    book.setName(
+                        "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"),
             "name",
-            "dummy|",
+            "Book name must be longer than 5 characters, shorter than 100 characters"),
+        Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy|"),
+            "name",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy/"),
             "name",
-            "dummy/",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy\\"),
             "name",
-            "dummy\\",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy#"),
             "name",
-            "dummy#",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy%"),
             "name",
-            "dummy%",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy="),
             "name",
-            "dummy=",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy+"),
             "name",
-            "dummy+",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy*"),
             "name",
-            "dummy*",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy_"),
             "name",
-            "dummy_",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy>"),
             "name",
-            "dummy>",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setName("dummy<"),
             "name",
-            "dummy<",
             "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setAuthor("x"),
             "author",
-            "x",
             "Book author must be longer than 5 characters, shorter than 30 characters"),
         Arguments.of(
+            (Consumer<Book>)
+                book ->
+                    book.setAuthor(
+                        "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"),
             "author",
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
             "Book author must be longer than 5 characters, shorter than 30 characters"),
         Arguments.of(
+            (Consumer<Book>) book -> book.setAuthor("dummy/"),
             "author",
-            "dummy/",
             "Book author must contain only ENGLISH letters, spaces, dashes, apostrophes"));
   }
-
-  private static void setField(Book book, String field, String value) {
-    switch (field) {
-      case "name" -> {
-        book.setName(value);
-        book.setAuthor("Valid Author");
-      }
-      case "author" -> {
-        book.setName("Valid Name");
-        book.setAuthor(value);
-      }
-    }
-  }
-
-  @ParameterizedTest
+  @ParameterizedTest(name = "Field={1}, Message={2}")
   @MethodSource("provideInvalidFields")
   void saveBookShouldThrowsExceptionIfInvalidArguments(
-      String field, String value, String errorMessage) throws Exception {
-    var book = new Book();
-    setField(book, field, value);
+      Consumer<Book> setter, String field, String errorMessage) throws Exception {
+    var book = new Book("Valid Name", "Valid Author");
+    setter.accept(book);
     var bookJson = objectMapper.writeValueAsString(book);
 
     mockMvc
