@@ -1,6 +1,5 @@
 package com.example.booklibrary.controllers;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -10,15 +9,12 @@ import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.ReaderNotFoundException;
 import com.example.booklibrary.service.LibraryService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,6 +31,12 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = BookController.class)
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
+  private static final String NAME_LENGTH_ERROR_MESSAGE =
+      "Book name must be longer than 5 characters, shorter than 100 characters";
+  private static final String NAME_CHARACTERS_ERROR_MESSAGE =
+      "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters";
+  private static final String AUTHOR_LENGTH_ERROR_MESSAGE =
+      "Book author must be longer than 5 characters, shorter than 30 characters";
   @Autowired BookController bookController;
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
@@ -109,77 +111,47 @@ class BookControllerTest {
 
   private static Stream<Arguments> provideInvalidFields() {
     return Stream.of(
+        Arguments.of((Consumer<Book>) book -> book.setName("x"), "name", NAME_LENGTH_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("x"),
+            (Consumer<Book>) book -> book.setName("a".repeat(101)),
             "name",
-            "Book name must be longer than 5 characters, shorter than 100 characters"),
+            NAME_LENGTH_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>)
-                book ->
-                    book.setName(
-                        "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"),
-            "name",
-            "Book name must be longer than 5 characters, shorter than 100 characters"),
+            (Consumer<Book>) book -> book.setName("dummy|"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy|"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
-        Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy/"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy/"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
             (Consumer<Book>) book -> book.setName("dummy\\"),
             "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy#"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy#"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy%"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy%"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy="),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy="), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy+"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy+"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy*"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy*"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy_"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy_"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy>"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy>"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setName("dummy<"),
-            "name",
-            "Book name must not contain the following characters: |/\\#%=+*_><, and must be written using ENGLISH letters"),
+            (Consumer<Book>) book -> book.setName("dummy<"), "name", NAME_CHARACTERS_ERROR_MESSAGE),
         Arguments.of(
-            (Consumer<Book>) book -> book.setAuthor("x"),
+            (Consumer<Book>) book -> book.setAuthor("x"), "author", AUTHOR_LENGTH_ERROR_MESSAGE),
+        Arguments.of(
+            (Consumer<Book>) book -> book.setAuthor("a".repeat(101)),
             "author",
-            "Book author must be longer than 5 characters, shorter than 30 characters"),
-        Arguments.of(
-            (Consumer<Book>)
-                book ->
-                    book.setAuthor(
-                        "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"),
-            "author",
-            "Book author must be longer than 5 characters, shorter than 30 characters"),
+            AUTHOR_LENGTH_ERROR_MESSAGE),
         Arguments.of(
             (Consumer<Book>) book -> book.setAuthor("dummy/"),
             "author",
             "Book author must contain only ENGLISH letters, spaces, dashes, apostrophes"));
   }
+
   @ParameterizedTest(name = "Field={1}, Message={2}")
   @MethodSource("provideInvalidFields")
   void saveBookShouldThrowsExceptionIfInvalidArguments(
