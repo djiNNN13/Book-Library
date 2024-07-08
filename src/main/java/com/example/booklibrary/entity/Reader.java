@@ -8,14 +8,14 @@ import java.util.Objects;
 public class Reader {
   @Positive private Long id;
 
-  @NotBlank(message = "Book author cannot be null!")
+  @NotBlank(message = "Reader name cannot be null!")
   @Pattern(
       regexp = "^[a-zA-Z\\s'-]+$",
-      message = "Book author must contain only ENGLISH letters, spaces, dashes, apostrophes")
+      message = "Reader name must contain only ENGLISH letters, spaces, dashes, apostrophes")
   @Length(
       min = 5,
       max = 30,
-      message = "Book author must be longer than 5 characters, shorter than 30 characters")
+      message = "Reader name must be longer than 5 characters, shorter than 30 characters")
   private String name;
 
   public Reader(String name) {

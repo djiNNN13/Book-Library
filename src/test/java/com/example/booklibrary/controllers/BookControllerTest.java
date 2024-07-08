@@ -165,7 +165,7 @@ class BookControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Failed to create a new book, the request contains invalid fields"))
+                .value("Failed to create a new object, the request contains invalid fields"))
         .andExpect(jsonPath("$.errors[0].field").value(field))
         .andExpect(jsonPath("$.errors[0].message").value(errorMessage));
 
