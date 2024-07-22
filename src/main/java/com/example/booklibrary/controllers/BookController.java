@@ -33,7 +33,7 @@ public class BookController {
   @PostMapping("/books")
   public ResponseEntity<Book> saveBook(@Valid @RequestBody Book book) {
     if (book.getId() != null){
-      throw new SaveBookException("Request body should not contain book id value, only name and author!");
+      throw new SaveBookException("Request body should not contain book id value");
     }
     var savedBook = libraryService.addNewBook(book);
     return ResponseEntity.ok(savedBook);
@@ -41,9 +41,9 @@ public class BookController {
 
   @PostMapping("/books/{bookId}/readers/{readerId}")
   public ResponseEntity<Void> borrowBookToReader(
-      @PathVariable("bookId") @NotNull @Positive(message = "Please use only positive bookId")
+      @PathVariable("bookId") @NotNull @Positive(message = "Book ID must be a positive number")
           Long bookId,
-      @PathVariable("readerId") @NotNull @Positive(message = "Please use only positive readerId")
+      @PathVariable("readerId") @NotNull @Positive(message = "Reader ID must be a positive number")
           Long readerId) {
     libraryService.borrowBook(bookId, readerId);
     return ResponseEntity.ok().build();

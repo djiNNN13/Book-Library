@@ -33,7 +33,7 @@ public class ReaderController {
   public ResponseEntity<Reader> saveReader(@Valid @RequestBody Reader reader) {
     if (reader.getId() != null) {
       throw new SaveReaderException(
-          "Request body should not contain reader id value, only name and author!");
+          "Request body should not contain reader id value");
     }
     var savedReader = libraryService.addNewReader(reader);
     return ResponseEntity.ok(savedReader);
@@ -41,7 +41,7 @@ public class ReaderController {
 
   @GetMapping("/readers/{readerId}/books")
   public ResponseEntity<List<Book>> getBorrowedBooksByReaderId(
-      @PathVariable("readerId") @NotNull @Positive(message = "Please use only positive readerId!") Long readerId) {
+      @PathVariable("readerId") @NotNull @Positive(message = "Reader ID must be a positive number") Long readerId) {
     var books = libraryService.showBorrowedBooks(readerId);
     return ResponseEntity.ok(books);
   }

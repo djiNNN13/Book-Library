@@ -52,6 +52,11 @@ class ReaderDaoIT {
 
     assertThat(actualReaders).hasSize(3);
     assertThat(readerIds).contains(reader1.getId(), reader2.getId(), reader3.getId());
+
+    assertAll(
+        () -> assertThat(actualReaders.get(0).getName()).isEqualTo(reader1.getName()),
+        () -> assertThat(actualReaders.get(1).getName()).isEqualTo(reader2.getName()),
+        () -> assertThat(actualReaders.get(2).getName()).isEqualTo(reader3.getName()));
   }
 
   @Test
@@ -68,13 +73,13 @@ class ReaderDaoIT {
     bookDao.borrow(book2.getId(), reader1.getId());
     bookDao.borrow(book3.getId(), reader2.getId());
 
-    Optional<Book> borrowedBook1 = bookDao.findById(book1.getId());
-    Optional<Book> borrowedBook2 = bookDao.findById(book2.getId());
-    Optional<Book> borrowedBook3 = bookDao.findById(book3.getId());
+    book1.setReaderId(reader1.getId());
+    book2.setReaderId(reader1.getId());
+    book3.setReaderId(reader2.getId());
 
     Map<Reader, List<Book>> expectedMap = new HashMap<>();
-    expectedMap.put(reader1, List.of(borrowedBook1.get(), borrowedBook2.get()));
-    expectedMap.put(reader2, List.of(borrowedBook3.get()));
+    expectedMap.put(reader1, List.of(book1, book2));
+    expectedMap.put(reader2, List.of(book1));
     expectedMap.put(reader3, Collections.emptyList());
 
     Map<Reader, List<Book>> actualMap = readerDao.findAllWithBooks();
@@ -91,12 +96,12 @@ class ReaderDaoIT {
     var book = bookDao.save(generateBook("Test1", "Test1"));
     var reader = readerDao.save(generateReader("Test2"));
     bookDao.borrow(book.getId(), reader.getId());
-    Optional<Reader> expectedReader = readerDao.findById(reader.getId());
+    book.setReaderId(reader.getId());
 
     Optional<Reader> actualReader = readerDao.findReaderByBookId(book.getId());
 
     assertThat(actualReader).isPresent();
-    assertThat(actualReader.get()).isEqualTo(expectedReader.get());
+    assertThat(actualReader.get()).isEqualTo(reader);
   }
 
   private static Book generateBook(String name, String author) {

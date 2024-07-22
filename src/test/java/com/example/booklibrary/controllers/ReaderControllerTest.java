@@ -62,8 +62,7 @@ class ReaderControllerTest {
 
   @Test
   void getReadersShouldReturnEmptyList() throws Exception {
-    List<Reader> readerList = new ArrayList<>();
-
+    List<Reader> readerList = List.of();
     when(libraryService.findAllReader()).thenReturn(readerList);
 
     mockMvc
@@ -76,13 +75,15 @@ class ReaderControllerTest {
   void saveReader() throws Exception {
     var reader = generateReader("Test Name");
     var readerJson = objectMapper.writeValueAsString(reader);
+    var savedReader = generateReaderWithId(1L, "Test Name");
 
-    when(libraryService.addNewReader(reader)).thenReturn(reader);
+    when(libraryService.addNewReader(reader)).thenReturn(savedReader);
 
     mockMvc
         .perform(
             post("/api/v1/readers").contentType(MediaType.APPLICATION_JSON).content(readerJson))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(savedReader.getId()))
         .andExpect(jsonPath("$.name").value("Test Name"));
 
     verify(libraryService, times(1)).addNewReader(reader);

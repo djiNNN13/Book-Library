@@ -20,11 +20,12 @@ public class GlobalExceptionHandler {
     List<ErrorDetail> errors =
         ex.getBindingResult().getFieldErrors().stream().map(ErrorDetail::new).toList();
 
-
     var errorResponse =
         new ErrorResponse(
             LocalDateTime.now(),
-            "Failed to create a new object, the request contains invalid fields",
+            String.format(
+                "Failed to create a new %s, the request contains invalid fields",
+                ex.getObjectName()),
             errors);
 
     return ResponseEntity.badRequest().body(errorResponse);
