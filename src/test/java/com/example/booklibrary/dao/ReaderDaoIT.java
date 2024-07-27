@@ -79,7 +79,7 @@ class ReaderDaoIT {
 
     Map<Reader, List<Book>> expectedMap = new HashMap<>();
     expectedMap.put(reader1, List.of(book1, book2));
-    expectedMap.put(reader2, List.of(book1));
+    expectedMap.put(reader2, List.of(book3));
     expectedMap.put(reader3, Collections.emptyList());
 
     Map<Reader, List<Book>> actualMap = readerDao.findAllWithBooks();

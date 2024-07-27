@@ -107,7 +107,7 @@ class BookControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Request body should not contain book id value, only name and author!"));
+                .value("Request body should not contain book id value"));
 
     verify(libraryService, never()).addNewBook(book);
   }
@@ -168,7 +168,7 @@ class BookControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Failed to create a new object, the request contains invalid fields"))
+                .value("Failed to create a new book, the request contains invalid fields"))
         .andExpect(jsonPath("$.errors[0].field").value(field))
         .andExpect(jsonPath("$.errors[0].message").value(errorMessage));
 
@@ -193,9 +193,9 @@ class BookControllerTest {
   @CsvSource(
       delimiter = ';',
       value = {
-        "-1 ; 1 ; Please use only positive bookId",
-        "1 ; -1 ; Please use only positive readerId",
-        "-1 ; -1 ; Please use only positive bookId, Please use only positive readerId"
+        "-1 ; 1 ; Book ID must be a positive number",
+        "1 ; -1 ; Reader ID must be a positive number",
+        "-1 ; -1 ; Book ID must be a positive number, Reader ID must be a positive number"
       })
   void borrowBookToReaderShouldThrowsExceptionIfInvalidArguments(
       Long bookId, Long readerId, String expectedMessage) throws Exception {

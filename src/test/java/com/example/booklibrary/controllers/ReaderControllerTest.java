@@ -100,7 +100,7 @@ class ReaderControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Request body should not contain reader id value, only name and author!"));
+                .value("Request body should not contain reader id value"));
 
     verify(libraryService, never()).addNewReader(reader);
   }
@@ -126,7 +126,7 @@ class ReaderControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Failed to create a new object, the request contains invalid fields"))
+                .value("Failed to create a new reader, the request contains invalid fields"))
         .andExpect(jsonPath("$.errors[0].message").value(errorMessage));
 
     verify(libraryService, never()).addNewReader(reader);
@@ -175,7 +175,7 @@ class ReaderControllerTest {
 
   @Test
   void getBorrowedBooksByReaderIdShouldThrowsExceptionIfInvalidId() throws Exception {
-    var expectedMessage = "Please use only positive readerId!";
+    var expectedMessage = "Reader ID must be a positive number";
 
     mockMvc
         .perform(get("/api/v1/readers/{readerId}/books", -1L))

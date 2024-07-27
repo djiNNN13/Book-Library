@@ -11,7 +11,7 @@ public class ErrorDetail {
   public ErrorDetail(FieldError fieldError) {
     this.field = fieldError.getField();
     this.message = fieldError.getDefaultMessage();
-    this.rejectedValue = fieldError.getRejectedValue().toString();
+    this.rejectedValue = (fieldError.getRejectedValue() != null) ? fieldError.getRejectedValue().toString() : "null";
   }
 
   public String getField() {
