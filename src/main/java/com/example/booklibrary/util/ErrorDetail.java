@@ -6,12 +6,12 @@ public class ErrorDetail {
 
   private final String message;
 
-  private final Object rejectedValue;
+  private final String rejectedValue;
 
   public ErrorDetail(FieldError fieldError) {
     this.field = fieldError.getField();
     this.message = fieldError.getDefaultMessage();
-    this.rejectedValue = fieldError.getRejectedValue();
+    this.rejectedValue = fieldError.getRejectedValue().toString();
   }
 
   public String getField() {
