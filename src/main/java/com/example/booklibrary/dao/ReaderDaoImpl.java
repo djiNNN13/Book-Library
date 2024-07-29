@@ -48,7 +48,7 @@ public class ReaderDaoImpl implements ReaderDao {
 
   @Override
   public Optional<Reader> findById(Long readerId) {
-    var query = "SELECT id AS readerId, name AS readerName FROM reader WHERE id = ?";
+    var query = "SELECT id, name FROM reader WHERE id = ?";
     try {
       //noinspection DataFlowIssue
       return Optional.of(

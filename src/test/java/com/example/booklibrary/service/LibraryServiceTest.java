@@ -46,7 +46,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooksIfListIsEmpty() {
-    List<Book> expectedBooks = new ArrayList<>();
+    List<Book> expectedBooks = List.of();
     when(bookDao.findAll()).thenReturn(expectedBooks);
 
     List<Book> actualBooks = libraryService.findAllBooks();
@@ -68,7 +68,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllReaderIfListIsEmpty() {
-    List<Reader> expectedReaders = new ArrayList<>();
+    List<Reader> expectedReaders = List.of();
     when(readerDao.findAll()).thenReturn(expectedReaders);
 
     List<Reader> actualReaders = libraryService.findAllReader();
@@ -243,7 +243,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllReadersWithBooksIfMapIsEmpty() {
-    Map<Reader, List<Book>> expectedResult = new HashMap<>();
+    Map<Reader, List<Book>> expectedResult = Map.of();
     when(readerDao.findAllWithBooks()).thenReturn(expectedResult);
 
     List<ReaderWithBooksDto> actualResult = libraryService.findAllReadersWithBooks();
@@ -283,7 +283,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooksWithReadersIfMapIsEmpty() {
-    Map<Book, Optional<Reader>> expectedResult = new HashMap<>();
+    Map<Book, Optional<Reader>> expectedResult = Map.of();
     when(bookDao.findAllWithReaders()).thenReturn(expectedResult);
 
     List<BookWithReaderDto> actualResult = libraryService.findAllBooksWithReaders();

@@ -69,7 +69,7 @@ class BookControllerTest {
 
   @Test
   void getBooksShouldReturnEmptyList() throws Exception {
-    List<Book> bookList = new ArrayList<>();
+    List<Book> bookList = List.of();
 
     when(libraryService.findAllBooks()).thenReturn(bookList);
 
@@ -83,11 +83,14 @@ class BookControllerTest {
   void saveBook() throws Exception {
     var book = generateBook("Test name", "Test author");
     var bookJson = objectMapper.writeValueAsString(book);
-    when(libraryService.addNewBook(book)).thenReturn(book);
+    var savedBook = generateBookWithId(1L, "Test name", "Test author");
+
+    when(libraryService.addNewBook(book)).thenReturn(savedBook);
 
     mockMvc
         .perform(post("/api/v1/books").contentType(MediaType.APPLICATION_JSON).content(bookJson))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(savedBook.getId()))
         .andExpect(jsonPath("$.name").value(book.getName()))
         .andExpect(jsonPath("$.author").value(book.getAuthor()));
 
@@ -104,7 +107,7 @@ class BookControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage")
-                .value("Request body should not contain book id value, only name and author!"));
+                .value("Request body should not contain book id value"));
 
     verify(libraryService, never()).addNewBook(book);
   }
@@ -190,9 +193,9 @@ class BookControllerTest {
   @CsvSource(
       delimiter = ';',
       value = {
-        "-1 ; 1 ; Please use only positive bookId",
-        "1 ; -1 ; Please use only positive readerId",
-        "-1 ; -1 ; Please use only positive bookId, Please use only positive readerId"
+        "-1 ; 1 ; Book ID must be a positive number",
+        "1 ; -1 ; Reader ID must be a positive number",
+        "-1 ; -1 ; Book ID must be a positive number, Reader ID must be a positive number"
       })
   void borrowBookToReaderShouldThrowsExceptionIfInvalidArguments(
       Long bookId, Long readerId, String expectedMessage) throws Exception {

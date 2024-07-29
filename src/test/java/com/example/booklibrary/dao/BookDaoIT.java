@@ -52,6 +52,11 @@ class BookDaoIT {
 
     assertThat(actualBooks).hasSize(3);
     assertThat(bookIds).contains(book1.getId(), book2.getId(), book3.getId());
+
+    assertAll(
+            () -> assertThat(actualBooks.get(0).getName()).isEqualTo(book1.getName()),
+            () -> assertThat(actualBooks.get(1).getName()).isEqualTo(book2.getName()),
+            () -> assertThat(actualBooks.get(2).getName()).isEqualTo(book3.getName()));
   }
 
   @Test
@@ -68,9 +73,11 @@ class BookDaoIT {
     bookDao.borrow(book2.getId(), reader1.getId());
     bookDao.borrow(book3.getId(), reader2.getId());
 
-    Optional<Book> actualBook1 = bookDao.findById(book1.getId());
-    Optional<Book> actualBook2 = bookDao.findById(book2.getId());
-    List<Book> expectedBooks = List.of(actualBook1.get(), actualBook2.get());
+    book1.setReaderId(reader1.getId());
+    book2.setReaderId(reader1.getId());
+    book3.setReaderId(reader2.getId());
+
+    List<Book> expectedBooks = List.of(book1, book2);
 
     List<Book> actualBooks = bookDao.findAllByReaderId(reader1.getId());
 
@@ -91,22 +98,22 @@ class BookDaoIT {
     bookDao.borrow(book1.getId(), reader1.getId());
     bookDao.borrow(book2.getId(), reader2.getId());
 
-    Optional<Book> borrowedBook1 = bookDao.findById(book1.getId());
-    Optional<Book> borrowedBook2 = bookDao.findById(book2.getId());
-    Optional<Book> emptyBook = bookDao.findById(book3.getId());
+    book1.setReaderId(reader1.getId());
+    book2.setReaderId(reader2.getId());
+
     Map<Book, Optional<Reader>> expectedMap =
         Map.of(
-            borrowedBook1.get(), Optional.of(reader1),
-            borrowedBook2.get(), Optional.of(reader2),
-            emptyBook.get(), Optional.empty());
+            book1, Optional.of(reader1),
+            book2, Optional.of(reader2),
+            book3, Optional.empty());
     Map<Book, Optional<Reader>> actualMap = bookDao.findAllWithReaders();
 
     assertAll(
         () -> assertThat(actualMap).hasSameSizeAs(expectedMap),
-        () -> assertThat(actualMap).containsEntry(borrowedBook1.get(), Optional.of(reader1)),
-        () -> assertThat(actualMap).containsEntry(borrowedBook2.get(), Optional.of(reader2)),
-        () -> assertThat(actualMap).containsKey(emptyBook.get()),
-        () -> assertThat(actualMap.get(emptyBook.get())).isEmpty());
+        () -> assertThat(actualMap).containsEntry(book1, Optional.of(reader1)),
+        () -> assertThat(actualMap).containsEntry(book2, Optional.of(reader2)),
+        () -> assertThat(actualMap).containsKey(book3),
+        () -> assertThat(actualMap.get(book3)).isEmpty());
   }
 
   @Test
