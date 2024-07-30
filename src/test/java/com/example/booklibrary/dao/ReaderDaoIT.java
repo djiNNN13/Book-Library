@@ -3,20 +3,16 @@ package com.example.booklibrary.dao;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.booklibrary.dao.annotation.DaoIT;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 
-@JdbcTest
-@Sql(scripts = "classpath:db/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@ComponentScan
+@DaoIT
 class ReaderDaoIT {
   @Autowired ReaderDao readerDao;
   @Autowired BookDao bookDao;

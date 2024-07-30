@@ -1,3 +1,6 @@
+DELETE FROM book;
+DELETE FROM reader;
+
 INSERT INTO book(name, author)
 VALUES ('1984', 'George Orwell'),
        ('Home', 'Tony Morrison'),
