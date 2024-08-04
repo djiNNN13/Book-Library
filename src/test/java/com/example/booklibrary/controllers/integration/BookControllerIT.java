@@ -1,5 +1,6 @@
 package com.example.booklibrary.controllers.integration;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -12,9 +13,11 @@ import com.example.booklibrary.dao.ReaderDao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 @ControllerIT
@@ -48,6 +51,10 @@ class BookControllerIT {
   void saveBook() throws Exception {
     var book = generateBook("Martin Eden", "Jack London");
 
+    var isBookPresent =
+        bookDao.findAll().stream().anyMatch(currentBook -> currentBook.equals(book));
+    assertThat(isBookPresent).isFalse();
+
     mockMvc
         .perform(
             post("/api/v1/books")
@@ -71,6 +78,9 @@ class BookControllerIT {
         .andExpect(status().isBadRequest())
         .andExpect(
             jsonPath("$.errorMessage").value("Request body should not contain book id value"));
+
+    Optional<Book> maybeBook = bookDao.findById(book.getId());
+    assertThat(maybeBook).isNotPresent();
   }
 
   @Test
@@ -81,6 +91,9 @@ class BookControllerIT {
     mockMvc
         .perform(post("/api/v1/books/{bookId}/readers/{readerId}", book.getId(), reader.getId()))
         .andExpect(status().isOk());
+
+    Optional<Book> maybeBook = bookDao.findById(book.getId());
+    assertThat(maybeBook.get().getReaderId()).isEqualTo(reader.getId());
   }
 
   @Test
@@ -91,6 +104,9 @@ class BookControllerIT {
     bookDao.borrow(book.getId(), reader.getId());
 
     mockMvc.perform(delete("/api/v1/books/{bookId}", book.getId())).andExpect(status().isOk());
+
+    Optional<Book> maybeBook = bookDao.findById(book.getId());
+    assertThat(maybeBook.get().getReaderId()).isNull();
   }
 
   @Test
@@ -107,6 +123,7 @@ class BookControllerIT {
         .andExpect(jsonPath("$.name").value(reader.getName()));
   }
 
+  @Sql(statements = "TRUNCATE TABLE book RESTART IDENTITY")
   @Test
   void getBooksWithReaders() throws Exception {
     var book1 = bookDao.save(generateBook("Martin Eden", "Jack London"));
@@ -118,21 +135,21 @@ class BookControllerIT {
     bookDao.borrow(book1.getId(), reader1.getId());
     bookDao.borrow(book2.getId(), reader2.getId());
 
-    mockMvc.perform(get("/api/v1/books/readers"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[2].id").value(book1.getId()))
-            .andExpect(jsonPath("$[2].name").value(book1.getName()))
-            .andExpect(jsonPath("$[2].author").value(book1.getAuthor()))
-            .andExpect(jsonPath("$[2].reader.name").value(reader1.getName()))
-           .andExpect(jsonPath("$[1].id").value(book2.getId()))
-           .andExpect(jsonPath("$[1].name").value(book2.getName()))
-           .andExpect(jsonPath("$[1].author").value(book2.getAuthor()))
-           .andExpect(jsonPath("$[1].reader.name").value(reader2.getName()))
-           .andExpect(jsonPath("$[0].id").value(book3.getId()))
-           .andExpect(jsonPath("$[0].name").value(book3.getName()))
-           .andExpect(jsonPath("$[0].author").value(book3.getAuthor()))
-            .andExpect(jsonPath("$[0].reader").doesNotExist());
-
+    mockMvc
+        .perform(get("/api/v1/books/readers"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[2].id").value(book1.getId()))
+        .andExpect(jsonPath("$[2].name").value(book1.getName()))
+        .andExpect(jsonPath("$[2].author").value(book1.getAuthor()))
+        .andExpect(jsonPath("$[2].reader.name").value(reader1.getName()))
+        .andExpect(jsonPath("$[1].id").value(book2.getId()))
+        .andExpect(jsonPath("$[1].name").value(book2.getName()))
+        .andExpect(jsonPath("$[1].author").value(book2.getAuthor()))
+        .andExpect(jsonPath("$[1].reader.name").value(reader2.getName()))
+        .andExpect(jsonPath("$[0].id").value(book3.getId()))
+        .andExpect(jsonPath("$[0].name").value(book3.getName()))
+        .andExpect(jsonPath("$[0].author").value(book3.getAuthor()))
+        .andExpect(jsonPath("$[0].reader").doesNotExist());
   }
 
   private static Book generateBook(String name, String author) {

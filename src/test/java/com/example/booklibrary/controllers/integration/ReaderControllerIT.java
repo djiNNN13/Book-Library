@@ -1,5 +1,6 @@
 package com.example.booklibrary.controllers.integration;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,6 +13,7 @@ import com.example.booklibrary.dao.ReaderDao;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,6 +47,10 @@ class ReaderControllerIT {
   void saveReader() throws Exception {
     var reader = generateReader("Yevhenii");
 
+    var isReaderPresent =
+        readerDao.findAll().stream().anyMatch(currentReader -> currentReader.equals(reader));
+    assertThat(isReaderPresent).isFalse();
+
     mockMvc
         .perform(
             post("/api/v1/readers")
@@ -53,6 +59,23 @@ class ReaderControllerIT {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1L))
         .andExpect(jsonPath("$.name").value(reader.getName()));
+  }
+
+  @Test
+  void saveReaderWithInvalidRequestBody() throws Exception {
+    var reader = new Reader(4L, "Yevhenii");
+
+    mockMvc
+        .perform(
+            post("/api/v1/readers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reader)))
+        .andExpect(status().isBadRequest())
+        .andExpect(
+            jsonPath("$.errorMessage").value("Request body should not contain reader id value"));
+
+    Optional<Reader> maybeReader = readerDao.findById(reader.getId());
+    assertThat(maybeReader).isNotPresent();
   }
 
   @Test
