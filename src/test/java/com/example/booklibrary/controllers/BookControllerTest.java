@@ -75,8 +75,7 @@ class BookControllerTest {
 
     mockMvc
         .perform(get("/api/v1/books"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(0));
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -184,7 +183,7 @@ class BookControllerTest {
 
     mockMvc
         .perform(post("/api/v1/books/{bookId}/readers/{readerId}", bookId, readerId))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     verify(libraryService, times(1)).borrowBook(bookId, readerId);
   }
@@ -214,7 +213,7 @@ class BookControllerTest {
 
     doNothing().when(libraryService).returnBookToLibrary(bookId);
 
-    mockMvc.perform(delete("/api/v1/books/{bookId}", bookId)).andExpect(status().isOk());
+    mockMvc.perform(delete("/api/v1/books/{bookId}", bookId)).andExpect(status().isNoContent());
 
     verify(libraryService, times(1)).returnBookToLibrary(bookId);
   }

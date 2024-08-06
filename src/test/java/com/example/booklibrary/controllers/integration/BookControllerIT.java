@@ -90,7 +90,7 @@ class BookControllerIT {
 
     mockMvc
         .perform(post("/api/v1/books/{bookId}/readers/{readerId}", book.getId(), reader.getId()))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     Optional<Book> maybeBook = bookDao.findById(book.getId());
     assertThat(maybeBook.get().getReaderId()).isEqualTo(reader.getId());
@@ -103,7 +103,7 @@ class BookControllerIT {
 
     bookDao.borrow(book.getId(), reader.getId());
 
-    mockMvc.perform(delete("/api/v1/books/{bookId}", book.getId())).andExpect(status().isOk());
+    mockMvc.perform(delete("/api/v1/books/{bookId}", book.getId())).andExpect(status().isNoContent());
 
     Optional<Book> maybeBook = bookDao.findById(book.getId());
     assertThat(maybeBook.get().getReaderId()).isNull();

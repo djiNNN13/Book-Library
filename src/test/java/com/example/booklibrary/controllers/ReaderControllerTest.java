@@ -67,8 +67,7 @@ class ReaderControllerTest {
 
     mockMvc
         .perform(get("/api/v1/readers"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(0));
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -167,8 +166,7 @@ class ReaderControllerTest {
 
     mockMvc
         .perform(get("/api/v1/readers/{readerId}/books", 1L))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(0));
+        .andExpect(status().isNoContent());
 
     verify(libraryService, times(1)).showBorrowedBooks(1L);
   }
