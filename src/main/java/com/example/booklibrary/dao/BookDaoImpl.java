@@ -1,5 +1,6 @@
 package com.example.booklibrary.dao;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
@@ -75,10 +76,10 @@ public class BookDaoImpl implements BookDao {
   }
 
   @Override
-  public List<Book> findAll() {
-    var query = "SELECT id, name, author, reader_id AS readerId FROM book";
+  public List<BookDto> findAll() {
+    var query = "SELECT id, name, author FROM book";
     try {
-      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Book.class));
+      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(BookDto.class));
     } catch (DataAccessException ex) {
       throw new DaoOperationException("Error finding all books", ex);
     }
@@ -97,18 +98,17 @@ public class BookDaoImpl implements BookDao {
   }
 
   @Override
-  public List<Book> findAllByReaderId(long readerId) {
+  public List<BookDto> findAllByReaderId(long readerId) {
     var query =
         """
                 SELECT id,
                   name,
-                  author,
-                  reader_id
+                  author
                 FROM book
                   WHERE reader_id = ?
                 """;
     try {
-      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Book.class), readerId);
+      return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(BookDto.class), readerId);
     } catch (DataAccessException ex) {
       throw new DaoOperationException(
           String.format("Error finding all books by reader id: %d", readerId), ex);
@@ -116,7 +116,7 @@ public class BookDaoImpl implements BookDao {
   }
 
   @Override
-  public Map<Book, Optional<Reader>> findAllWithReaders() {
+  public Map<Book, Reader> findAllWithReaders() {
     var query =
         """
                 SELECT
@@ -127,7 +127,7 @@ public class BookDaoImpl implements BookDao {
                   reader.id AS readerId,
                   reader.name AS readerName
                 FROM book
-                  LEFT JOIN reader ON book.reader_id = reader.id
+                  INNER JOIN reader ON book.reader_id = reader.id
                      """;
     try {
       return jdbcTemplate.query(query, DaoUtils.getBookReaderExtractor());

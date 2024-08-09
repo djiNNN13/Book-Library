@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.booklibrary.dao.annotation.DaoIT;
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import java.util.*;
@@ -73,12 +74,16 @@ class ReaderDaoIT {
     book2.setReaderId(reader1.getId());
     book3.setReaderId(reader2.getId());
 
-    Map<Reader, List<Book>> expectedMap = new HashMap<>();
-    expectedMap.put(reader1, List.of(book1, book2));
-    expectedMap.put(reader2, List.of(book3));
-    expectedMap.put(reader3, Collections.emptyList());
+    Map<Reader, List<BookDto>> expectedMap = new HashMap<>();
+    expectedMap.put(
+        reader1,
+        List.of(
+            new BookDto(book1.getId(), book1.getName(), book1.getAuthor()),
+            new BookDto(book2.getId(), book2.getName(), book2.getAuthor())));
+    expectedMap.put(
+        reader2, List.of(new BookDto(book3.getId(), book3.getName(), book3.getAuthor())));
 
-    Map<Reader, List<Book>> actualMap = readerDao.findAllWithBooks();
+    Map<Reader, List<BookDto>> actualMap = readerDao.findAllWithBooks();
 
     assertThat(actualMap)
         .hasSameSizeAs(expectedMap)

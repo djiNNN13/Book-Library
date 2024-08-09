@@ -1,5 +1,6 @@
 package com.example.booklibrary.dao;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import org.springframework.stereotype.Repository;
@@ -14,11 +15,11 @@ public interface BookDao {
 
   Optional<Book> findById(long id);
 
-  List<Book> findAll();
+  List<BookDto> findAll();
 
   void borrow(long bookId, long readerId);
 
-  List<Book> findAllByReaderId(long readerId);
+  List<BookDto> findAllByReaderId(long readerId);
 
-  Map<Book, Optional<Reader>> findAllWithReaders();
+  Map<Book, Reader> findAllWithReaders();
 }

@@ -1,5 +1,6 @@
 package com.example.booklibrary.dao;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 
@@ -16,5 +17,5 @@ public interface ReaderDao {
 
   Optional<Reader> findReaderByBookId(Long bookId);
 
-  Map<Reader, List<Book>> findAllWithBooks();
+  Map<Reader, List<BookDto>> findAllWithBooks();
 }

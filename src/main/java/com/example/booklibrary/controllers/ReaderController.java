@@ -1,5 +1,6 @@
 package com.example.booklibrary.controllers;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
@@ -32,17 +33,16 @@ public class ReaderController {
   }
 
   @Operation(summary = "Get all readers", description = "Returns all readers from the library")
-  @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Successfully retrieved",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved",
+      content =
+          @Content(
+              mediaType = "application/json",
+              examples =
+                  @ExampleObject(
+                      value =
+                          """
                             [
                             {
                             "id": 1,
@@ -53,15 +53,10 @@ public class ReaderController {
                             "name": "Yevhenii"
                             }
                             ]
-                            """))),
-    @ApiResponse(responseCode = "204", description = "No content", content = @Content)
-  })
+                            """)))
   @GetMapping("/readers")
   public ResponseEntity<List<Reader>> getReaders() {
     var readers = libraryService.findAllReader();
-    if (readers.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
     return ResponseEntity.ok(readers);
   }
 
@@ -167,18 +162,16 @@ public class ReaderController {
                         value =
                             """
                             [
-                                {
+                              {
                                 "id": 1,
                                 "name": "1984",
-                                "author": "George Orwell",
-                                "readerId": 1
-                                },
-                                {
+                                "author": "George Orwell"
+                              },
+                              {
                                 "id": 3,
                                 "name": "Glue",
-                                "author": "Irvine Welsh",
-                                "readerId": 1
-                                }
+                                "author": "Irvine Welsh"
+                              }
                             ]
                             """))),
     @ApiResponse(
@@ -211,78 +204,76 @@ public class ReaderController {
                             }
                           ]
                           """)
-                })),
-    @ApiResponse(responseCode = "204", description = "No content", content = @Content)
+                }))
   })
   @GetMapping("/readers/{readerId}/books")
-  public ResponseEntity<List<Book>> getBorrowedBooksByReaderId(
+  public ResponseEntity<List<BookDto>> getBorrowedBooksByReaderId(
       @PathVariable("readerId")
           @NotNull
           @Positive(message = "Reader ID must be a positive number")
           @Parameter(description = "Reader ID to get books", example = "1")
           Long readerId) {
     var books = libraryService.showBorrowedBooks(readerId);
-    if (books.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
     return ResponseEntity.ok(books);
   }
 
   @Operation(
       summary = "Get all readers with borrowed books",
       description = "Returns list of all readers and their borrowed books in the library")
-  @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Successfully retrieved",
-        content =
-            @Content(
-                mediaType = "application/json",
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved",
+      content =
+          @Content(
+              mediaType = "application/json",
+              examples =
+                  @ExampleObject(
+                      value =
+                          """
                                           [
-                                          {
-                                          "id": 1,
-                                          "name": "Ivan",
-                                          "books":[
-                                          {
-                                          "id": 3,
-                                          "name": "Glue",
-                                          "author": "Irvine Welsh",
-                                          "readerId": 1
-                                          }
-                                          ]
-                                          },
-                                          {
-                                          "id": 2,
-                                          "name": "Yevhenii",
-                                          "books":[
-                                          {
-                                          "id": 2,
-                                          "name": "Home",
-                                          "author": "Tony Morrison",
-                                          "readerId": 2
-                                          }
-                                          ]
-                                          },
-                                          {
-                                          "id": 3,
-                                          "name": "Andrii",
-                                          "books":[
-                                          ]
-                                          }
-                                          ]
-                                          """))),
-    @ApiResponse(responseCode = "204", description = "No content", content = @Content)
-  })
+                                           {
+                                           "id": 1,
+                                           "name": "Ivan",
+                                           "books":[
+                                           {
+                                           "id": 3,
+                                           "name": "Glue",
+                                           "author": "Irvine Welsh"
+                                           },
+                                           {
+                                           "id": 1,
+                                           "name": "1984",
+                                           "author": "George Orwell"
+                                           }
+                                           ]
+                                           },
+                                           {
+                                           "id": 2,
+                                           "name": "Yevhenii",
+                                           "books":[
+                                           {
+                                           "id": 2,
+                                           "name": "Home",
+                                           "author": "Tony Morrison"
+                                           }
+                                           ]
+                                           },
+                                           {
+                                           "id": 5,
+                                           "name": "Alexey",
+                                           "books":[
+                                           {
+                                           "id": 4,
+                                           "name": "The Great Book",
+                                           "author": "John Doe"
+                                           }
+                                           ]
+                                           }
+                                           ]
+                                          """)))
   @GetMapping("/readers/books")
   public ResponseEntity<List<ReaderWithBooksDto>> getReadersWithBorrowedBooks() {
     var readersWithBooks = libraryService.findAllReadersWithBooks();
-    if (readersWithBooks.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
     return ResponseEntity.ok(readersWithBooks);
   }
 }

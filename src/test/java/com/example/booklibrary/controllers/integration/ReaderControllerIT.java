@@ -95,10 +95,8 @@ class ReaderControllerIT {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value(book1.getName()))
         .andExpect(jsonPath("$[0].author").value(book1.getAuthor()))
-        .andExpect(jsonPath("$[0].readerId").value(reader1.getId()))
         .andExpect(jsonPath("$[1].name").value(book2.getName()))
-        .andExpect(jsonPath("$[1].author").value(book2.getAuthor()))
-        .andExpect(jsonPath("$[1].readerId").value(reader1.getId()));
+        .andExpect(jsonPath("$[1].author").value(book2.getAuthor()));
   }
 
   @Test
@@ -116,8 +114,7 @@ class ReaderControllerIT {
         .andExpect(jsonPath("$[0].books.length()").value(1))
         .andExpect(jsonPath("$[0].books[0].id").value(book1.getId()))
         .andExpect(jsonPath("$[0].books[0].name").value(book1.getName()))
-        .andExpect(jsonPath("$[0].books[0].author").value(book1.getAuthor()))
-        .andExpect(jsonPath("$[0].books[0].readerId").value(reader1.getId()));
+        .andExpect(jsonPath("$[0].books[0].author").value(book1.getAuthor()));
   }
 
   private static Reader generateReader(String name) {

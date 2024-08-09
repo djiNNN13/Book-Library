@@ -7,9 +7,9 @@ import java.util.List;
 public class ReaderWithBooksDto {
   private Long id;
   private String name;
-  private List<Book> books;
+  private List<BookDto> books;
 
-  public ReaderWithBooksDto(Long id, String name, List<Book> books) {
+  public ReaderWithBooksDto(Long id, String name, List<BookDto> books) {
     this.id = id;
     this.name = name;
     this.books = books;
@@ -31,11 +31,11 @@ public class ReaderWithBooksDto {
     this.name = name;
   }
 
-  public List<Book> getBooks() {
+  public List<BookDto> getBooks() {
     return books;
   }
 
-  public void setBooks(List<Book> books) {
+  public void setBooks(List<BookDto> books) {
     this.books = books;
   }
 }

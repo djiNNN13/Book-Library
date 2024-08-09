@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.booklibrary.dao.annotation.DaoIT;
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import java.util.*;
@@ -37,22 +38,23 @@ class BookDaoIT {
         () -> assertThat(actualBook.get().getName()).isEqualTo(bookToSave.getName()),
         () -> assertThat(actualBook.get().getAuthor()).isEqualTo(bookToSave.getAuthor()));
   }
+
   @Test
   void findAll() {
     var book1 = bookDao.save(generateBook("Test1", "Test1"));
     var book2 = bookDao.save(generateBook("Test2", "Test2"));
     var book3 = bookDao.save(generateBook("Test3", "Test3"));
 
-    List<Book> actualBooks = bookDao.findAll();
-    List<Long> bookIds = actualBooks.stream().map(Book::getId).toList();
+    List<BookDto> actualBooks = bookDao.findAll();
+    List<Long> bookIds = actualBooks.stream().map(BookDto::getId).toList();
 
     assertThat(actualBooks).hasSize(3);
     assertThat(bookIds).contains(book1.getId(), book2.getId(), book3.getId());
 
     assertAll(
-            () -> assertThat(actualBooks.get(0).getName()).isEqualTo(book1.getName()),
-            () -> assertThat(actualBooks.get(1).getName()).isEqualTo(book2.getName()),
-            () -> assertThat(actualBooks.get(2).getName()).isEqualTo(book3.getName()));
+        () -> assertThat(actualBooks.get(0).getName()).isEqualTo(book1.getName()),
+        () -> assertThat(actualBooks.get(1).getName()).isEqualTo(book2.getName()),
+        () -> assertThat(actualBooks.get(2).getName()).isEqualTo(book3.getName()));
   }
 
   @Test
@@ -73,9 +75,12 @@ class BookDaoIT {
     book2.setReaderId(reader1.getId());
     book3.setReaderId(reader2.getId());
 
-    List<Book> expectedBooks = List.of(book1, book2);
+    List<BookDto> expectedBooks =
+        List.of(
+            new BookDto(book1.getId(), book1.getName(), book1.getAuthor()),
+            new BookDto(book2.getId(), book2.getName(), book2.getAuthor()));
 
-    List<Book> actualBooks = bookDao.findAllByReaderId(reader1.getId());
+    List<BookDto> actualBooks = bookDao.findAllByReaderId(reader1.getId());
 
     assertThat(actualBooks).isNotNull();
     assertThat(actualBooks).hasSameSizeAs(expectedBooks);
@@ -97,19 +102,17 @@ class BookDaoIT {
     book1.setReaderId(reader1.getId());
     book2.setReaderId(reader2.getId());
 
-    Map<Book, Optional<Reader>> expectedMap =
+    Map<Book, Reader> expectedMap =
         Map.of(
-            book1, Optional.of(reader1),
-            book2, Optional.of(reader2),
-            book3, Optional.empty());
-    Map<Book, Optional<Reader>> actualMap = bookDao.findAllWithReaders();
+            book1, reader1,
+            book2, reader2);
+    Map<Book, Reader> actualMap = bookDao.findAllWithReaders();
 
     assertAll(
         () -> assertThat(actualMap).hasSameSizeAs(expectedMap),
-        () -> assertThat(actualMap).containsEntry(book1, Optional.of(reader1)),
-        () -> assertThat(actualMap).containsEntry(book2, Optional.of(reader2)),
-        () -> assertThat(actualMap).containsKey(book3),
-        () -> assertThat(actualMap.get(book3)).isEmpty());
+        () -> assertThat(actualMap).containsEntry(book1, reader1),
+        () -> assertThat(actualMap).containsEntry(book2, reader2),
+        () -> assertThat(actualMap).doesNotContainKey(book3));
   }
 
   @Test

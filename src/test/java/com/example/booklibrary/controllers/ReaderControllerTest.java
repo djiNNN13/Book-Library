@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
@@ -67,7 +68,8 @@ class ReaderControllerTest {
 
     mockMvc
         .perform(get("/api/v1/readers"))
-        .andExpect(status().isNoContent());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
   }
 
   @Test
@@ -98,8 +100,7 @@ class ReaderControllerTest {
             post("/api/v1/readers").contentType(MediaType.APPLICATION_JSON).content(readerJson))
         .andExpect(status().isBadRequest())
         .andExpect(
-            jsonPath("$.errorMessage")
-                .value("Request body should not contain reader id value"));
+            jsonPath("$.errorMessage").value("Request body should not contain reader id value"));
 
     verify(libraryService, never()).addNewReader(reader);
   }
@@ -135,9 +136,9 @@ class ReaderControllerTest {
   void getBorrowedBooksByReaderId() throws Exception {
     var bookList =
         List.of(
-            generateBookWithId(1L, "Test1", "Test1"),
-            generateBookWithId(2L, "Test2", "Test2"),
-            generateBookWithId(3L, "Test3", "Test3"));
+            new BookDto(1L, "Test1", "Test1"),
+            new BookDto(2L, "Test2", "Test2"),
+            new BookDto(3L, "Test3", "Test3"));
 
     when(libraryService.showBorrowedBooks(1L)).thenReturn(bookList);
 
@@ -160,13 +161,14 @@ class ReaderControllerTest {
 
   @Test
   void getBorrowedBooksByReaderIdShouldReturnEmptyBookList() throws Exception {
-    List<Book> bookList = new ArrayList<>();
+    List<BookDto> bookList = List.of();
 
     when(libraryService.showBorrowedBooks(1L)).thenReturn(bookList);
 
     mockMvc
         .perform(get("/api/v1/readers/{readerId}/books", 1L))
-        .andExpect(status().isNoContent());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
 
     verify(libraryService, times(1)).showBorrowedBooks(1L);
   }
@@ -190,11 +192,9 @@ class ReaderControllerTest {
             new ReaderWithBooksDto(
                 1L,
                 "Reader1",
-                List.of(
-                    generateBookWithId(1L, "Book1", "Book1"),
-                    generateBookWithId(2L, "Book2", "Book2"))),
+                List.of(new BookDto(1L, "Book1", "Book1"), new BookDto(2L, "Book2", "Book2"))),
             new ReaderWithBooksDto(
-                2L, "Reader2", Collections.singletonList(generateBookWithId(3L, "Book3", "Book3"))),
+                2L, "Reader2", Collections.singletonList(new BookDto(3L, "Book3", "Book3"))),
             new ReaderWithBooksDto(3L, "Reader3", Collections.emptyList()));
 
     when(libraryService.findAllReadersWithBooks()).thenReturn(readerWithBooks);
