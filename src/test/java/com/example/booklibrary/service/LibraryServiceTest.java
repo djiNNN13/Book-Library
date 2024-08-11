@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.example.booklibrary.dao.BookDao;
 import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.BookWithReaderDto;
 import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
@@ -33,12 +34,12 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooks() {
-    List<Book> expectedBooks =
-        List.of(new Book(1L, "X", "X"), new Book(2L, "Y", "Y"), new Book(3L, "Z", "Z"));
+    List<BookDto> expectedBooks =
+        List.of(new BookDto(1L, "X", "X"), new BookDto(2L, "Y", "Y"), new BookDto(3L, "Z", "Z"));
 
     when(bookDao.findAll()).thenReturn(expectedBooks);
 
-    List<Book> actualBooks = libraryService.findAllBooks();
+    List<BookDto> actualBooks = libraryService.findAllBooks();
 
     verify(bookDao).findAll();
     assertThat(actualBooks).isEqualTo(expectedBooks);
@@ -46,10 +47,10 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooksIfListIsEmpty() {
-    List<Book> expectedBooks = List.of();
+    List<BookDto> expectedBooks = List.of();
     when(bookDao.findAll()).thenReturn(expectedBooks);
 
-    List<Book> actualBooks = libraryService.findAllBooks();
+    List<BookDto> actualBooks = libraryService.findAllBooks();
 
     assertThat(actualBooks).isNotNull();
     assertThat(actualBooks).isEmpty();
@@ -107,12 +108,12 @@ class LibraryServiceTest {
   @Test
   void showBorrowedBooks() {
     var readerId = 1L;
-    List<Book> expectedBooks =
-        List.of(new Book(1L, "X", "X"), new Book(2L, "Y", "Y"), new Book(3L, "Z", "Z"));
+    List<BookDto> expectedBooks =
+        List.of(new BookDto(1L, "X", "X"), new BookDto(2L, "Y", "Y"), new BookDto(3L, "Z", "Z"));
     when(readerDao.findById(readerId)).thenReturn(Optional.of(new Reader()));
     when(bookDao.findAllByReaderId(readerId)).thenReturn(expectedBooks);
 
-    List<Book> actualBooks = libraryService.showBorrowedBooks(readerId);
+    List<BookDto> actualBooks = libraryService.showBorrowedBooks(readerId);
 
     assertThat(actualBooks).isEqualTo(expectedBooks);
   }
@@ -217,11 +218,11 @@ class LibraryServiceTest {
 
   @Test
   void findAllReadersWithBooks() {
-    Map<Reader, List<Book>> expectedResult =
+    Map<Reader, List<BookDto>> expectedResult =
         Map.of(
             new Reader(1L, "X"),
-                List.of(new Book(1L, "dummy", "dummy"), new Book(2L, "dummy1", "dummy1")),
-            new Reader(2L, "Y"), List.of(new Book(3L, "dummy2", "dummy2")));
+                List.of(new BookDto(1L, "dummy", "dummy"), new BookDto(2L, "dummy1", "dummy1")),
+            new Reader(2L, "Y"), List.of(new BookDto(3L, "dummy2", "dummy2")));
     when(readerDao.findAllWithBooks()).thenReturn(expectedResult);
 
     List<ReaderWithBooksDto> actualResult = libraryService.findAllReadersWithBooks();
@@ -243,7 +244,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllReadersWithBooksIfMapIsEmpty() {
-    Map<Reader, List<Book>> expectedResult = Map.of();
+    Map<Reader, List<BookDto>> expectedResult = Map.of();
     when(readerDao.findAllWithBooks()).thenReturn(expectedResult);
 
     List<ReaderWithBooksDto> actualResult = libraryService.findAllReadersWithBooks();
@@ -254,12 +255,12 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooksWithReaders() {
-    Map<Book, Optional<Reader>> expectedResult =
+    Map<Book, Reader> expectedResult =
         Map.of(
             new Book(1L, "dummy1", "dummy2"),
-            Optional.of(new Reader("dummy")),
+            new Reader("dummy"),
             new Book(2L, "dummy3", "dummy4"),
-            Optional.of(new Reader("dummy1")));
+            new Reader("dummy1"));
     when(bookDao.findAllWithReaders()).thenReturn(expectedResult);
 
     List<BookWithReaderDto> actualResult = libraryService.findAllBooksWithReaders();
@@ -283,7 +284,7 @@ class LibraryServiceTest {
 
   @Test
   void findAllBooksWithReadersIfMapIsEmpty() {
-    Map<Book, Optional<Reader>> expectedResult = Map.of();
+    Map<Book, Reader> expectedResult = Map.of();
     when(bookDao.findAllWithReaders()).thenReturn(expectedResult);
 
     List<BookWithReaderDto> actualResult = libraryService.findAllBooksWithReaders();

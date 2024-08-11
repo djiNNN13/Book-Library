@@ -16,3 +16,10 @@ server:
   port: 8080
   servlet:
     context-path: /book-library
+
+# Swagger UI
+springdoc:
+  swagger-ui:
+    path: /
+  api-docs:
+    path: /api-docs

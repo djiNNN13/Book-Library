@@ -1,5 +1,6 @@
 package com.example.booklibrary.dao;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
@@ -9,30 +10,28 @@ import java.util.*;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 public class DaoUtils {
-  public static ResultSetExtractor<Map<Book, Optional<Reader>>> getBookReaderExtractor() {
+  public static ResultSetExtractor<Map<Book, Reader>> getBookReaderExtractor() {
     return rs -> {
-      Map<Book, Optional<Reader>> map = new HashMap<>();
+      Map<Book, Reader> map = new HashMap<>();
 
       while (rs.next()) {
         var book = mapResultSetToBook(rs);
-        var reader = rs.getString("readerName") != null ? mapResultSetToReader(rs) : null;
-        map.put(book, Optional.ofNullable(reader));
+        var reader = mapResultSetToReader(rs);
+        map.put(book, reader);
       }
       return map;
     };
   }
 
-  public static ResultSetExtractor<Map<Reader, List<Book>>> getReaderBooksExtractor() {
+  public static ResultSetExtractor<Map<Reader, List<BookDto>>> getReaderBooksExtractor() {
     return rs -> {
-      Map<Reader, List<Book>> map = new HashMap<>();
+      Map<Reader, List<BookDto>> map = new HashMap<>();
 
       while (rs.next()) {
         var reader = mapResultSetToReader(rs);
-        List<Book> borrowedBooks = map.computeIfAbsent(reader, k -> new ArrayList<>());
-        if (rs.getString("bookName") != null) {
-          Book book = DaoUtils.mapResultSetToBook(rs);
-          borrowedBooks.add(book);
-        }
+        List<BookDto> borrowedBooks = map.computeIfAbsent(reader, k -> new ArrayList<>());
+        BookDto book = mapResultSetToBookDto(rs);
+        borrowedBooks.add(book);
       }
       return map;
     };
@@ -59,6 +58,18 @@ public class DaoUtils {
       return book;
     } catch (SQLException e) {
       throw new DaoOperationException("Cannot parse row to create book instance", e);
+    }
+  }
+
+  private static BookDto mapResultSetToBookDto(ResultSet resultSet) {
+    try {
+      var bookDto = new BookDto();
+      bookDto.setId(resultSet.getLong("bookId"));
+      bookDto.setName(resultSet.getString("bookName"));
+      bookDto.setAuthor(resultSet.getString("bookAuthor"));
+      return bookDto;
+    } catch (SQLException e) {
+      throw new DaoOperationException("Cannot parse row to create bookDto instance", e);
     }
   }
 }

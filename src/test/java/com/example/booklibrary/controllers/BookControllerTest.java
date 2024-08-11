@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.BookWithReaderDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
@@ -46,9 +47,9 @@ class BookControllerTest {
   void getBooksShouldReturnBookList() throws Exception {
     var bookList =
         List.of(
-            generateBookWithId(1L, "Test1", "Test1"),
-            generateBookWithId(2L, "Test2", "Test2"),
-            generateBookWithId(3L, "Test3", "Test3"));
+            new BookDto(1L, "Test1", "Test1"),
+            new BookDto(2L, "Test2", "Test2"),
+            new BookDto(3L, "Test3", "Test3"));
 
     when(libraryService.findAllBooks()).thenReturn(bookList);
 
@@ -69,7 +70,7 @@ class BookControllerTest {
 
   @Test
   void getBooksShouldReturnEmptyList() throws Exception {
-    List<Book> bookList = List.of();
+    List<BookDto> bookList = List.of();
 
     when(libraryService.findAllBooks()).thenReturn(bookList);
 
@@ -106,8 +107,7 @@ class BookControllerTest {
         .perform(post("/api/v1/books").contentType(MediaType.APPLICATION_JSON).content(bookJson))
         .andExpect(status().isBadRequest())
         .andExpect(
-            jsonPath("$.errorMessage")
-                .value("Request body should not contain book id value"));
+            jsonPath("$.errorMessage").value("Request body should not contain book id value"));
 
     verify(libraryService, never()).addNewBook(book);
   }
@@ -214,7 +214,9 @@ class BookControllerTest {
 
     doNothing().when(libraryService).returnBookToLibrary(bookId);
 
-    mockMvc.perform(delete("/api/v1/books/{bookId}", bookId)).andExpect(status().isOk());
+    mockMvc
+        .perform(delete("/api/v1/books/{bookId}", bookId))
+        .andExpect(status().isOk());
 
     verify(libraryService, times(1)).returnBookToLibrary(bookId);
   }

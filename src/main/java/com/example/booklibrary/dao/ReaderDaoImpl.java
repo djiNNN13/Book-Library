@@ -1,5 +1,6 @@
 package com.example.booklibrary.dao;
 
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
@@ -94,7 +95,7 @@ public class ReaderDaoImpl implements ReaderDao {
   }
 
   @Override
-  public Map<Reader, List<Book>> findAllWithBooks() {
+  public Map<Reader, List<BookDto>> findAllWithBooks() {
     var query =
         """
                 SELECT
@@ -102,10 +103,9 @@ public class ReaderDaoImpl implements ReaderDao {
                   reader.name AS readerName,
                   book.id AS bookId,
                   book.name AS bookName,
-                  book.author AS bookAuthor,
-                  book.reader_id
+                  book.author AS bookAuthor
                 FROM reader
-                  LEFT JOIN book ON reader.id = book.reader_id
+                  INNER JOIN book ON reader.id = book.reader_id
                 """;
     try {
       return jdbcTemplate.query(query, DaoUtils.getReaderBooksExtractor());

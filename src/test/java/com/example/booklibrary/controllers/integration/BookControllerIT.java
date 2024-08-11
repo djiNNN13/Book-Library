@@ -138,18 +138,15 @@ class BookControllerIT {
     mockMvc
         .perform(get("/api/v1/books/readers"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[2].id").value(book1.getId()))
-        .andExpect(jsonPath("$[2].name").value(book1.getName()))
-        .andExpect(jsonPath("$[2].author").value(book1.getAuthor()))
-        .andExpect(jsonPath("$[2].reader.name").value(reader1.getName()))
-        .andExpect(jsonPath("$[1].id").value(book2.getId()))
-        .andExpect(jsonPath("$[1].name").value(book2.getName()))
-        .andExpect(jsonPath("$[1].author").value(book2.getAuthor()))
-        .andExpect(jsonPath("$[1].reader.name").value(reader2.getName()))
-        .andExpect(jsonPath("$[0].id").value(book3.getId()))
-        .andExpect(jsonPath("$[0].name").value(book3.getName()))
-        .andExpect(jsonPath("$[0].author").value(book3.getAuthor()))
-        .andExpect(jsonPath("$[0].reader").doesNotExist());
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[1].id").value(book1.getId()))
+        .andExpect(jsonPath("$[1].name").value(book1.getName()))
+        .andExpect(jsonPath("$[1].author").value(book1.getAuthor()))
+        .andExpect(jsonPath("$[1].reader").value(reader1))
+        .andExpect(jsonPath("$[0].id").value(book2.getId()))
+        .andExpect(jsonPath("$[0].name").value(book2.getName()))
+        .andExpect(jsonPath("$[0].author").value(book2.getAuthor()))
+        .andExpect(jsonPath("$[0].reader").value(reader2));
   }
 
   private static Book generateBook(String name, String author) {

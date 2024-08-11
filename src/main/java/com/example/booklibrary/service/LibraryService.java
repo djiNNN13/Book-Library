@@ -2,6 +2,7 @@ package com.example.booklibrary.service;
 
 import com.example.booklibrary.dao.BookDao;
 import com.example.booklibrary.dao.ReaderDao;
+import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.BookWithReaderDto;
 import com.example.booklibrary.dto.ReaderWithBooksDto;
 import com.example.booklibrary.entity.Book;
@@ -25,7 +26,7 @@ public class LibraryService {
     this.readerDao = readerDao;
   }
 
-  public List<Book> findAllBooks() {
+  public List<BookDto> findAllBooks() {
     return bookDao.findAll();
   }
 
@@ -39,7 +40,7 @@ public class LibraryService {
     return readerDao.findReaderByBookId(bookId);
   }
 
-  public List<Book> showBorrowedBooks(Long readerId) {
+  public List<BookDto> showBorrowedBooks(Long readerId) {
     readerDao.findById(readerId).orElseThrow(() -> new LibraryServiceException(READER_NOT_FOUND));
 
     return bookDao.findAllByReaderId(readerId);
@@ -88,7 +89,7 @@ public class LibraryService {
     return bookWithReader.entrySet().stream()
         .map(
             entry ->
-                BookMapper.INSTANCE.bookToBookDto(entry.getKey(), entry.getValue().orElse(null)))
+                BookMapper.INSTANCE.bookToBookDto(entry.getKey(), entry.getValue()))
         .toList();
   }
 }
