@@ -30,7 +30,7 @@ public class DaoUtils {
       while (rs.next()) {
         var reader = mapResultSetToReader(rs);
         List<BookDto> borrowedBooks = map.computeIfAbsent(reader, k -> new ArrayList<>());
-        BookDto book = DaoUtils.mapResultSetToBookDto(rs);
+        BookDto book = mapResultSetToBookDto(rs);
         borrowedBooks.add(book);
       }
       return map;

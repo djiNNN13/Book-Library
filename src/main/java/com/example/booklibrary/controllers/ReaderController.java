@@ -74,12 +74,10 @@ public class ReaderController {
                     @ExampleObject(
                         value =
                             """
-                            [
                                 {
                                 "id": 4,
                                 "name": "Misha"
                                 }
-                            ]
                             """))),
     @ApiResponse(
         responseCode = "400",
@@ -92,12 +90,10 @@ public class ReaderController {
                       description = "Request body contains book id",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:53:24.8706155",
                             "errorMessage": "Request body should not contain reader id value"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Contains invalid fields",
@@ -185,24 +181,20 @@ public class ReaderController {
                       description = "Reader ID is negative",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T19:19:33.9184707",
                             "errorMessage": "Reader ID must be a positive number"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Book doesn't exists",
                       description = "This book ID doesn't exists in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T19:20:27.721849",
                             "errorMessage": "This Reader ID doesn't exist!"
                             }
-                          ]
                           """)
                 }))
   })

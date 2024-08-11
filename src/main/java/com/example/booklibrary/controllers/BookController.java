@@ -78,13 +78,11 @@ public class BookController {
                     @ExampleObject(
                         value =
                             """
-                            [
                                 {
                                     "id": 4,
                                     "name": "The Great Book",
                                     "author": "John Doe"
                                    }
-                            ]
                             """))),
     @ApiResponse(
         responseCode = "400",
@@ -97,12 +95,10 @@ public class BookController {
                       description = "Request body contains book id",
                       value =
                           """
-                            [
                                 {
                               "localDateTime": "2024-08-05T16:16:53.8490207",
                               "errorMessage": "Request body should not contain book id value"
                             }
-                            ]
                             """),
                   @ExampleObject(
                       name = "Contains invalid fields",
@@ -174,48 +170,40 @@ public class BookController {
                       description = "Both IDs are negative",
                       value =
                           """
-                            [
                               {
                               "localDateTime": "2024-08-05T17:21:09.9245848",
                               "errorMessage": "Book ID must be a positive number, Reader ID must be a positive number"
                               }
-                            ]
                             """),
                   @ExampleObject(
                       name = "Book doesn't exists",
                       description = "This book doesn't exists in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T19:45:31.1149262",
                             "errorMessage": "This Book ID doesn't exist!"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Reader doesn't exists",
                       description = "This reader doesn't exists in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T19:45:31.1149262",
                             "errorMessage": "This Reader ID doesn't exist!"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Book isn't available",
                       description = "Book is already borrowed by other reader",
                       value =
                           """
-                          [
                             {
                              "localDateTime": "2024-08-05T19:46:59.2143248",
                              "errorMessage": "Cannot borrow already borrowed Book!"
                              }
-                          ]
                           """),
                 }))
   })
@@ -251,36 +239,30 @@ public class BookController {
                       description = "Book ID is negative",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:28:33.2084866",
                             "errorMessage": "Book ID must be a positive number"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Book doesn't exists",
                       description = "This book ID doesn't exists in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:28:43.7529715",
                             "errorMessage": "This Book ID doesn't exist!"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Book hasn't reader",
                       description = "Book already in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:29:23.9543926",
                             "errorMessage": "Cannot return Book. Book is already in the Library!"
                             }
-                          ]
                           """)
                 }))
   })
@@ -313,12 +295,10 @@ public class BookController {
                     @ExampleObject(
                         value =
                             """
-                            [
                                 {
                                 "id": 1,
                                 "name": "Ivan"
                                 }
-                            ]
                             """))),
     @ApiResponse(
         responseCode = "400",
@@ -331,36 +311,30 @@ public class BookController {
                       description = "Book ID is negative",
                       value =
                           """
-                        [
                             {
                             "localDateTime": "2024-08-05T17:48:44.2293128",
                             "errorMessage": "Book ID must be a positive number"
                             }
-                        ]
                         """),
                   @ExampleObject(
                       name = "Book without reader",
                       description = "Book ID hasn't any reader from the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T17:54:48.2300445",
                             "errorMessage": "Cannot find reader by book = 4 id! Book has not any reader"
                             }
-                          ]
                           """),
                   @ExampleObject(
                       name = "Book doesn't exists",
                       description = "This book ID doesn't exists in the library",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:21:51.3133578",
                             "errorMessage": "This Book ID doesn't exist!"
                             }
-                          ]
                           """)
                 }))
   })
