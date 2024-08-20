@@ -7,11 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.booklibrary.dto.BookDto;
 import com.example.booklibrary.dto.ReaderWithBooksDto;
-import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.service.LibraryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -214,14 +212,10 @@ class ReaderControllerTest {
   }
 
   private static Reader generateReader(String name) {
-    return new Reader(name);
+    return Reader.builder().name(name).build();
   }
 
   private static Reader generateReaderWithId(Long id, String name) {
-    return new Reader(id, name);
-  }
-
-  private static Book generateBookWithId(Long id, String name, String author) {
-    return new Book(id, name, author);
+    return Reader.builder().id(id).name(name).build();
   }
 }

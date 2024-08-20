@@ -68,7 +68,7 @@ class BookControllerIT {
 
   @Test
   void saveBookWithInvalidRequestBody() throws Exception {
-    var book = new Book(4L, "Jack London", "Martin Eden");
+    var book = Book.builder().id(4L).name("Jack London").author("Martin Eden").build();
 
     mockMvc
         .perform(
@@ -150,10 +150,10 @@ class BookControllerIT {
   }
 
   private static Book generateBook(String name, String author) {
-    return new Book(name, author);
+    return Book.builder().name(name).author(author).build();
   }
 
   private static Reader generateReader(String name) {
-    return new Reader(name);
+    return Reader.builder().name(name).build();
   }
 }

@@ -11,7 +11,6 @@ import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.ReaderNotFoundException;
 import com.example.booklibrary.service.LibraryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -159,7 +158,7 @@ class BookControllerTest {
   @MethodSource("provideInvalidFields")
   void saveBookShouldThrowsExceptionIfInvalidArguments(
       Consumer<Book> setter, String field, String errorMessage) throws Exception {
-    var book = new Book("Valid Name", "Valid Author");
+    var book = generateBook("Valid Name", "Valid Author");
     setter.accept(book);
     var bookJson = objectMapper.writeValueAsString(book);
 
@@ -214,9 +213,7 @@ class BookControllerTest {
 
     doNothing().when(libraryService).returnBookToLibrary(bookId);
 
-    mockMvc
-        .perform(delete("/api/v1/books/{bookId}", bookId))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/api/v1/books/{bookId}", bookId)).andExpect(status().isOk());
 
     verify(libraryService, times(1)).returnBookToLibrary(bookId);
   }
@@ -224,7 +221,7 @@ class BookControllerTest {
   @Test
   void getReaderByBookId() throws Exception {
     var bookId = 1L;
-    var reader = generateReader(1L, "Test1");
+    var reader = generateReaderWithId(1L, "Test1");
 
     when(libraryService.showCurrentReaderOfBook(bookId)).thenReturn(Optional.of(reader));
 
@@ -256,8 +253,18 @@ class BookControllerTest {
   void getBooksWithReader() throws Exception {
     List<BookWithReaderDto> booksWithReader =
         List.of(
-            new BookWithReaderDto(1L, "Test1", "Test1", generateReader(1L, "Reader1")),
-            new BookWithReaderDto(2L, "Test2", "Test2", generateReader(2L, "Reader2")));
+            BookWithReaderDto.builder()
+                .id(1L)
+                .name("Test1")
+                .author("Test1")
+                .reader(generateReaderWithId(1L, "Reader1"))
+                .build(),
+            BookWithReaderDto.builder()
+                .id(1L)
+                .name("Test2")
+                .author("Test2")
+                .reader(generateReaderWithId(2L, "Reader2"))
+                .build());
 
     when(libraryService.findAllBooksWithReaders()).thenReturn(booksWithReader);
 
@@ -279,14 +286,14 @@ class BookControllerTest {
   }
 
   private static Book generateBookWithId(Long id, String name, String author) {
-    return new Book(id, name, author);
+    return Book.builder().id(id).name(name).author(author).build();
+  }
+
+  private static Reader generateReaderWithId(Long id, String name) {
+    return Reader.builder().id(id).name(name).build();
   }
 
   private static Book generateBook(String name, String author) {
-    return new Book(name, author);
-  }
-
-  private static Reader generateReader(Long id, String name) {
-    return new Reader(id, name);
+    return Book.builder().name(name).author(author).build();
   }
 }

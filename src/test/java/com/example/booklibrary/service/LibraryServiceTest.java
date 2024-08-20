@@ -134,7 +134,7 @@ class LibraryServiceTest {
 
   @Test
   void addNewReader() {
-    var reader = new Reader("Yevhenii");
+    var reader = Reader.builder().name("Yevhenii").build();
 
     libraryService.addNewReader(reader);
 
@@ -143,7 +143,7 @@ class LibraryServiceTest {
 
   @Test
   void addNewBook() {
-    var book = new Book("Martin Eden", "Jack London");
+    var book = Book.builder().name("Martin Eden").author("Jack London").build();
 
     libraryService.addNewBook(book);
 
@@ -154,8 +154,8 @@ class LibraryServiceTest {
   void borrowBook() {
     var bookId = 1L;
     var readerId = 1L;
-    var book = new Book(bookId, "Martin Eden", "Jack London");
-    var reader = new Reader(readerId, "Yevhenii");
+    var book = Book.builder().id(bookId).name("Martin Eden").author("Jack London").build();
+    var reader = Reader.builder().id(readerId).name("Yevhenii").build();
     when(bookDao.findById(bookId)).thenReturn(Optional.of(book));
     when(readerDao.findById(readerId)).thenReturn(Optional.of(reader));
     when(readerDao.findReaderByBookId(bookId)).thenReturn(Optional.empty());
@@ -184,7 +184,9 @@ class LibraryServiceTest {
   void borrowBookIfReaderIsNotFound() {
     var bookId = 1L;
     var readerId = 99999L;
-    var book = new Book(bookId, "Martin Eden", "Jack London");
+
+    var book = Book.builder().id(bookId).name("Martin Eden").author("Jack London").build();
+
     when(bookDao.findById(bookId)).thenReturn(Optional.of(book));
     when(readerDao.findById(readerId)).thenReturn(Optional.empty());
 
@@ -257,10 +259,11 @@ class LibraryServiceTest {
   void findAllBooksWithReaders() {
     Map<Book, Reader> expectedResult =
         Map.of(
-            new Book(1L, "dummy1", "dummy2"),
-            new Reader("dummy"),
-            new Book(2L, "dummy3", "dummy4"),
-            new Reader("dummy1"));
+            Book.builder().id(1L).name("dummy1").author("dummy2").build(),
+            Reader.builder().name("dummy").build(),
+            Book.builder().id(2L).name("dummy3").author("dummy4").build(),
+            Reader.builder().name("dummy1").build());
+
     when(bookDao.findAllWithReaders()).thenReturn(expectedResult);
 
     List<BookWithReaderDto> actualResult = libraryService.findAllBooksWithReaders();
@@ -323,7 +326,8 @@ class LibraryServiceTest {
   @Test
   void returnBookToLibraryIfBookIsInLibrary() {
     var bookId = 1L;
-    var book = new Book(bookId, "Martin Eden", "Jack London");
+    var book = Book.builder().id(bookId).name("Martin Eden").author("Jack London").build();
+
     when(bookDao.findById(bookId)).thenReturn(Optional.of(book));
     when(readerDao.findReaderByBookId(bookId)).thenReturn(Optional.empty());
 
@@ -334,6 +338,7 @@ class LibraryServiceTest {
     assertThat(exception.getClass()).isEqualTo(LibraryServiceException.class);
     assertThat(exception.getMessage())
         .isEqualTo("Cannot return Book. Book is already in the Library!");
+
     verify(bookDao, times(0)).returnBook(bookId);
   }
 }
