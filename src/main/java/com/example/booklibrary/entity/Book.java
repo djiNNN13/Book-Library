@@ -6,10 +6,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 @Builder
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Book {

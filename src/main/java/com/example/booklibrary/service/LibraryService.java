@@ -12,19 +12,17 @@ import com.example.booklibrary.mapper.BookMapper;
 import com.example.booklibrary.mapper.ReaderMapper;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class LibraryService {
   private static final String BOOK_NOT_FOUND = "This Book ID doesn't exist!";
   private static final String READER_NOT_FOUND = "This Reader ID doesn't exist!";
   private BookDao bookDao;
   private ReaderDao readerDao;
-
-  public LibraryService(BookDao bookDao, ReaderDao readerDao) {
-    this.bookDao = bookDao;
-    this.readerDao = readerDao;
-  }
 
   public List<BookDto> findAllBooks() {
     return bookDao.findAll();

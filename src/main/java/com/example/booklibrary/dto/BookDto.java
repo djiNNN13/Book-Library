@@ -2,9 +2,7 @@ package com.example.booklibrary.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookDto {
