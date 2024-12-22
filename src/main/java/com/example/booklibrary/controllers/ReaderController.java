@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +26,10 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 @Tag(name = "Reader API", description = "Endpoints for operations about reader")
 public class ReaderController {
   private final LibraryService libraryService;
-
-  public ReaderController(LibraryService libraryService) {
-    this.libraryService = libraryService;
-  }
 
   @Operation(summary = "Get all readers", description = "Returns all readers from the library")
   @ApiResponse(
@@ -100,7 +99,6 @@ public class ReaderController {
                       description = "Request body contains invalid fields",
                       value =
                           """
-                          [
                             {
                             "localDateTime": "2024-08-05T18:53:58.4462374",
                             "errorMessage": "Failed to create a new reader, the request contains invalid fields",
@@ -117,7 +115,6 @@ public class ReaderController {
                             }
                             ]
                             }
-                          ]
                           """)
                 }))
   })

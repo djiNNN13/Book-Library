@@ -131,10 +131,10 @@ class BookDaoIT {
   }
 
   private static Book generateBook(String name, String author) {
-    return new Book(name, author);
+    return Book.builder().name(name).author(author).build();
   }
 
   private static Reader generateReader(String name) {
-    return new Reader(name);
+    return Reader.builder().name(name).build();
   }
 }

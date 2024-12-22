@@ -41,7 +41,11 @@ public class GlobalExceptionHandler {
     SaveReaderException.class
   })
   public ResponseEntity<ErrorResponse> handleBadRequestSituations(RuntimeException ex) {
-    var errorResponse = new ErrorResponse(LocalDateTime.now(), ex.getMessage());
+    var errorResponse =
+        ErrorResponse.builder()
+            .localDateTime(LocalDateTime.now())
+            .errorMessage(ex.getMessage())
+            .build();
     return ResponseEntity.badRequest().body(errorResponse);
   }
 
@@ -49,12 +53,14 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handlePathVariablesInvalidArguments(
       ConstraintViolationException ex) {
     var errorResponse =
-        new ErrorResponse(
-            LocalDateTime.now(),
-            ex.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .sorted()
-                .collect(Collectors.joining(", ")));
+        ErrorResponse.builder()
+            .localDateTime(LocalDateTime.now())
+            .errorMessage(
+                ex.getConstraintViolations().stream()
+                    .map(ConstraintViolation::getMessage)
+                    .sorted()
+                    .collect(Collectors.joining(", ")))
+            .build();
     return ResponseEntity.badRequest().body(errorResponse);
   }
 }

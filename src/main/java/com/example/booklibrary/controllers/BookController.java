@@ -18,6 +18,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +27,10 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 @Tag(name = "Book API", description = "Endpoints for operations about book")
 public class BookController {
   private final LibraryService libraryService;
-
-  public BookController(LibraryService libraryService) {
-    this.libraryService = libraryService;
-  }
 
   @Operation(summary = "Get all books from the library", description = "Returns a list of books")
   @ApiResponse(
@@ -105,7 +104,6 @@ public class BookController {
                       description = "Request body contains invalid fields",
                       value =
                           """
-                            [
                             {
                              "localDateTime": "2024-08-06T16:48:58.1598451",
                              "errorMessage": "Failed to create a new book, the request contains invalid fields",
@@ -127,7 +125,6 @@ public class BookController {
                              }
                              ]
                              }
-                             ]
                                     """)
                 }))
   })

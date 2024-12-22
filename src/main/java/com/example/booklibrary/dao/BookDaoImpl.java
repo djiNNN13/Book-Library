@@ -5,6 +5,8 @@ import com.example.booklibrary.entity.Book;
 import com.example.booklibrary.entity.Reader;
 import com.example.booklibrary.exception.DaoOperationException;
 import java.util.*;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -14,12 +16,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class BookDaoImpl implements BookDao {
-  private JdbcTemplate jdbcTemplate;
-
-  public BookDaoImpl(JdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
+  private final JdbcTemplate jdbcTemplate;
 
   @Override
   public Book save(Book bookToSave) {
@@ -61,8 +60,7 @@ public class BookDaoImpl implements BookDao {
 
   @Override
   public Optional<Book> findById(long bookId) {
-    var query =
-        "SELECT id, name, author, reader_id FROM book WHERE id = ?";
+    var query = "SELECT id, name, author, reader_id FROM book WHERE id = ?";
     try {
       //noinspection DataFlowIssue
       return Optional.of(
