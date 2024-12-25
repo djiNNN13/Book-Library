@@ -55,4 +55,4 @@ logging:
     org:
       zalando:
         logbook:
-          Logbook: TRACE
+          Logbook: INFO
