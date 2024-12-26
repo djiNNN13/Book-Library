@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @JdbcTest
 @ActiveProfiles("test")
-@Sql(scripts = "classpath:db/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @ComponentScan(basePackages = {"com.example.booklibrary.dao"})
 public @interface DaoIT {
 }

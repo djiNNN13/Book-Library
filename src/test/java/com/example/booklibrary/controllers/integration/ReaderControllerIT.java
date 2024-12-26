@@ -51,14 +51,22 @@ class ReaderControllerIT {
         readerDao.findAll().stream().anyMatch(currentReader -> currentReader.equals(reader));
     assertThat(isReaderPresent).isFalse();
 
-    mockMvc
-        .perform(
-            post("/api/v1/readers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(reader)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1L))
-        .andExpect(jsonPath("$.name").value(reader.getName()));
+    var result =
+        mockMvc
+            .perform(
+                post("/api/v1/readers")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(reader)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(reader.getName()))
+            .andReturn();
+
+    var jsonResponse = result.getResponse().getContentAsString();
+    var createdReader = objectMapper.readValue(jsonResponse, Reader.class);
+
+    assertAll(
+        () -> assertThat(readerDao.findById(createdReader.getId())).isPresent(),
+        () -> assertThat(createdReader).isEqualTo(readerDao.findById(createdReader.getId()).get()));
   }
 
   @Test
