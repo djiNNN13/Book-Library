@@ -49,3 +49,10 @@ management:
       enabled: true
     env:
       enabled: true
+# Logbook
+logging:
+  level:
+    org:
+      zalando:
+        logbook:
+          Logbook: INFO
