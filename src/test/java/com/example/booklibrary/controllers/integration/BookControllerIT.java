@@ -52,18 +52,26 @@ class BookControllerIT {
     var book = generateBook("Martin Eden", "Jack London");
 
     var isBookPresent =
-        bookDao.findAll().stream().anyMatch(currentBook -> currentBook.equals(book));
+            bookDao.findAll().stream().anyMatch(currentBook -> currentBook.equals(book));
     assertThat(isBookPresent).isFalse();
 
-    mockMvc
-        .perform(
-            post("/api/v1/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(book)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1L))
-        .andExpect(jsonPath("$.name").value(book.getName()))
-        .andExpect(jsonPath("$.author").value(book.getAuthor()));
+    var result = mockMvc
+            .perform(
+                    post("/api/v1/books")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(book)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(book.getName()))
+            .andExpect(jsonPath("$.author").value(book.getAuthor()))
+            .andReturn();
+
+    var jsonResponse = result.getResponse().getContentAsString();
+    var createdBook = objectMapper.readValue(jsonResponse, Book.class);
+
+    assertAll(
+            () -> assertThat(bookDao.findById(createdBook.getId())).isPresent(),
+            () -> assertThat(createdBook).isEqualTo(bookDao.findById(createdBook.getId()).get())
+    );
   }
 
   @Test
